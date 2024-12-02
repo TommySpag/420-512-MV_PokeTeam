@@ -79,3 +79,21 @@ export async function deletePokeUserById(id){
                                         WHERE id = ?;`,[id])
     return status[0].affectedRows
 }
+
+export async function updatePokeUserTeam(userId,userData){
+     //DEBUG
+     console.log(`Database : update PokeUsers with userData.id : ${userId}`)
+     //
+     const [rows] = await pool.query(`   UPDATE pokeUsers
+                                         SET 
+                                            pokemon1_id = ?,
+                                            pokemon2_id = ?,
+                                            pokemon3_id = ?,
+                                            pokemon4_id = ?,
+                                            pokemon5_id = ?,
+                                            pokemon6_id = ?
+ 
+                                         WHERE id = ?;`,[userData.pokemon1_id,userData.pokemon2_id,userData.pokemon3_id,userData.pokemon4_id,userData.pokemon5_id,userData.pokemon6_id, userId])
+     return true
+
+}

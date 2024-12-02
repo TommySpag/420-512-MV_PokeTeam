@@ -1,0 +1,1 @@
+export const IP_BACKEND = "http://10.10.1.110:8080"

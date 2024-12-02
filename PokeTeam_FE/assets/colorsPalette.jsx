@@ -23,6 +23,27 @@ export const colorsPalette = {
     lightText: 'white',
     lightAlert: '#db8f8f'
 
+  },
+  types:{
+    normal: "",
+    fighting: "",
+    flying: "",
+    poison: "",
+    ground: "",
+    rock: "",
+    bug: "",
+    ghost: "",
+    steel: "",
+    fire: "",
+    water: "",
+    grass: "",
+    electric: "",
+    psychic: "",
+    ice: "",
+    dragon: "",
+    fairy: "",
+    dark: "",
+    original: "" //No leader -> color
   }
     
   };

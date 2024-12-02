@@ -1,5 +1,5 @@
 import express from 'express';
-import {getPokeUserByUsernameOrEmailAndPassword, createPokeUser, getPokeUserByUsernameOrEmail, getPokeUserById, updatePokeUserProfile, deletePokeUserById} from './database.js'
+import { getPokeUserByUsernameOrEmailAndPassword, createPokeUser, getPokeUserByUsernameOrEmail, getPokeUserById, updatePokeUserProfile, deletePokeUserById, updatePokeUserTeam } from './database.js'
 import jwt from 'jsonwebtoken';
 import cors from 'cors'
 
@@ -97,8 +97,8 @@ app.post("/pokeusers", async (req, res) => {
         }
 
         // Proceed to create the user
-        const newUser = await createPokeUser( email, username, password );
-        const token = jwt.sign({ userId:newUser.id }, SECRET_KEY, { expiresIn: '1h' });
+        const newUser = await createPokeUser(email, username, password);
+        const token = jwt.sign({ userId: newUser.id }, SECRET_KEY, { expiresIn: '1h' });
         console.log(token)
         // Return the newly created user information
         res.status(201).json({
@@ -106,7 +106,7 @@ app.post("/pokeusers", async (req, res) => {
             username: newUser.username,
             email: newUser.email,
             token
-            
+
         });
     } catch (error) {
         console.error('Error during signup: ', error);
@@ -120,8 +120,8 @@ app.get("/pokeusers/:id", async (req, res) => {
     try {
         const token = req.headers['authorization']?.split(' ')[1];
         if (!token) return res.status(403).send('Forbidden');
-        
-        const userId = req.params.id; 
+
+        const userId = req.params.id;
 
         // Check for missing fields
         if (!userId) {
@@ -133,7 +133,7 @@ app.get("/pokeusers/:id", async (req, res) => {
         if (!decoded?.userId) {
             return res.status(401).json({ error: "Forbidden: badToken" });
         }
-        
+
         if (decoded.userId != userId) {
             return res.status(409).json({ error: "Forbidden: you are not allowed to get this info" });
         }
@@ -141,7 +141,7 @@ app.get("/pokeusers/:id", async (req, res) => {
         // get user data
         const user = await getPokeUserById(userId);
         if (!user) {
-            return res.status(404).json({ error: `Aucun utilisateur pour l'id : ${id}`});
+            return res.status(404).json({ error: `Aucun utilisateur pour l'id : ${id}` });
         }
 
         // Return the information
@@ -164,11 +164,11 @@ app.get("/pokeusers/:id", async (req, res) => {
 app.put("/pokeusers/:id", async (req, res) => {
     const token = req.headers['authorization']?.split(' ')[1];
     if (!token) return res.status(403).send('Forbidden');
-    const userId = req.params.id; 
+    const userId = req.params.id;
 
-    const userData  = req.body;
+    const userData = req.body;
 
-    if(!userData || userId != userData?.id){
+    if (!userData || userId != userData?.id) {
         return res.status(409).json({ error: "Request missing userData" });
 
     }
@@ -177,7 +177,7 @@ app.put("/pokeusers/:id", async (req, res) => {
     if (!decoded?.userId) {
         return res.status(401).json({ error: "Forbidden: badToken" });
     }
-    
+
     if (decoded.userId != userId) {
         return res.status(409).json({ error: "Forbidden: you are not allowed to get this info" });
     }
@@ -190,12 +190,12 @@ app.put("/pokeusers/:id", async (req, res) => {
         // alter user data
         const user = await updatePokeUserProfile(userData);
         if (!user) {
-            return res.status(404).json({ error: `Error while updating data`});
+            return res.status(404).json({ error: `Error while updating data` });
         }
 
         // Return the information
         res.status(200).json({
-            message:"Success"
+            message: "Success"
         });
     } catch (error) {
         console.error('Error updating profile Data: ', error);
@@ -206,27 +206,27 @@ app.delete("/pokeusers/:id", async (req, res) => {
     try {
         const token = req.headers['authorization']?.split(' ')[1];
         if (!token) return res.status(403).send('Forbidden');
-        
-        const userId = req.params.id; 
-        
+
+        const userId = req.params.id;
+
         // Verify the token
         const decoded = jwt.verify(token, SECRET_KEY); // Synchronous verification
         if (!decoded?.userId) {
             return res.status(401).json({ error: "Unauthorized: Invalid token" });
         }
-        
+
         if (decoded.userId != userId) {
             return res.status(403).json({ error: "Forbidden: you are not allowed to delete this user" });
         }
 
         const user = await deletePokeUserById(userId);
         if (!user) {
-            return res.status(404).json({ error: `Aucun utilisateur pour l'id : ${id}`});
+            return res.status(404).json({ error: `Aucun utilisateur pour l'id : ${id}` });
         }
 
         // Return the information
         res.status(200).json({
-            message:"Success"
+            message: "Success"
         });
     } catch (error) {
         if (error instanceof jwt.JsonWebTokenError) {
@@ -248,7 +248,7 @@ app.put("/pokeusers/addpoke/:userid/:pokeid", async (req, res) => {
     if (!decoded?.userId) {
         return res.status(401).json({ error: "Forbidden: badToken" });
     }
-    
+
     if (decoded.userId != userId) {
         return res.status(409).json({ error: "Forbidden: you are not allowed to get this info" });
     }
@@ -258,28 +258,28 @@ app.put("/pokeusers/addpoke/:userid/:pokeid", async (req, res) => {
         //If not, place in the first possible column (nb of pokemon + 1)
         const user = await getPokeUserById(userId);
         if (!user) {
-            return res.status(404).json({ error: `Error while updating data`});
+            return res.status(404).json({ error: `Error while updating data` });
         }
 
         const nbPokemon = 0;
         for (let index = 6; index > 0; index--) {
-            if(user?.[`pokemon${index}_id`] !== null) {
-                nbPokemon ++;
+            if (user?.[`pokemon${index}_id`] !== null) {
+                nbPokemon++;
             }
         }
 
-        if(nbPokemon == 6) {
-            return res.status(400).json({ error: `Error: Team Full`});
+        if (nbPokemon == 6) {
+            return res.status(400).json({ error: `Error: Team Full` });
         }
 
         const result = await addPokemonToPokeUserTeam(pokeId, userId, nbPokemon + 1)
         if (!result) {
-            return res.status(500).json({ error: `Error executing query`});
+            return res.status(500).json({ error: `Error executing query` });
         }
 
         // Return the information
         res.status(200).json({
-            message:"Success"
+            message: "Success"
         });
     } catch (error) {
         console.error('Error updating profile Data: ', error);
@@ -288,7 +288,7 @@ app.put("/pokeusers/addpoke/:userid/:pokeid", async (req, res) => {
 });
 
 app.post("/pokeusers/authenticate", async (req, res) => {
-    
+
     try {
         const token = req.headers['authorization']?.split(' ')[1];
         if (!token) return res.status(403).send('Forbidden');
@@ -299,8 +299,8 @@ app.post("/pokeusers/authenticate", async (req, res) => {
             return res.status(409).json({ error: "Forbidden: badToken" });
         }
 
-    
-        
+
+
         res.status(200).json({
             id: decoded.userId,
         });
@@ -309,6 +309,39 @@ app.post("/pokeusers/authenticate", async (req, res) => {
         res.status(500).json({ error: 'Internal server error.' });
     }
 });
+
+app.put("/pokeusers/modifypoke/:id", async (req, res) => {
+    try {
+        const token = req.headers['authorization']?.split(' ')[1];
+        if (!token) return res.status(403).send('Forbidden');
+        const userId = req.params.id;
+        // Verify the token
+        const decoded = jwt.verify(token, SECRET_KEY); // Synchronous verification
+        if (!decoded?.userId) {
+            return res.status(401).json({ error: "Forbidden: badToken" });
+        }
+
+        if (decoded.userId != userId) {
+            return res.status(409).json({ error: "Forbidden: you are not allowed to get this info" });
+        }
+        const pokeData = req.body;
+
+        const result = await updatePokeUserTeam(userId, pokeData)
+        if (!result) {
+            return res.status(500).json({ error: `Error executing query` });
+        }
+
+        // Return the information
+        res.status(200).json({
+            message: "Success"
+        });
+
+
+    } catch (error) {
+
+    }
+
+})
 
 // Lorsqu'une erreur se produit dans l'application (par exemple, une exception non gérée), Express appelle automatiquement
 // ce middleware d'erreur avec l'objet d'erreur (err), ce qui permet de la gérer de manière centralisée et uniforme.
