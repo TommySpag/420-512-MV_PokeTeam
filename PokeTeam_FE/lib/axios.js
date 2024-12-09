@@ -219,4 +219,3 @@ export async function getPokemonInfoByName(pokeName){
         console.log(`axios.js : ${error}`)
     }
 }
-

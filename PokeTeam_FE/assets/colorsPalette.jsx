@@ -1,49 +1,31 @@
 // colors.js
 export const colorsPalette = {
   light:{
-    primary: '#3498db',
-    secondary: '#2d498a',
-    background_c1:'#E3F6F7',
-    background: '#B2EBF9',
-    text: '#2c3e50',
-    link: 'blue',
-    alert: '#ba1313',
-    lightText: 'white',
-    lightAlert: '#db8f8f'
-
+    primary: '#094582',//red
+    secondary: '#db3445',//red
+    background_c1:'#DF1818',//red que veux tommy 
+    background: '#f9c0b2',//red + pale 
+    text: '#2c3e50', // blue marin
+    link: 'blue', //blue
+    alert: '#ba1313', //red alert
+    lightText: 'white',//blanc
+    lightAlert: '#db8f8f',//red pale
+    black:"000000",//noir
+    // red: #db3445
+    text2: '#ffdb4e', // jaune
   },
   dark:{
-    primary: '#C69749',
-    secondary: '#735F32',
+    primary: '#db3445',
+    secondary: '#db3445',
     background_c1: '#282A3A',
     background: 'black',
     text: 'white',
     link: 'yellow',
     alert: '#ba1313',
-    lightText: 'white',
-    lightAlert: '#db8f8f'
+    lightText: 'black',
+    lightAlert: '#db8f8f',
+    black:"white"
 
-  },
-  types:{
-    normal: "",
-    fighting: "",
-    flying: "",
-    poison: "",
-    ground: "",
-    rock: "",
-    bug: "",
-    ghost: "",
-    steel: "",
-    fire: "",
-    water: "",
-    grass: "",
-    electric: "",
-    psychic: "",
-    ice: "",
-    dragon: "",
-    fairy: "",
-    dark: "",
-    original: "" //No leader -> color
   }
     
   };

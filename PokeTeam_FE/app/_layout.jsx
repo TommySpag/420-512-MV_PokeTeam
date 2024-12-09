@@ -3,7 +3,6 @@ import { Drawer } from 'expo-router/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import CustomDrawerHeader from '../components/CustomDrawerHeader';
-import { ColorTypeProvider } from '../contexts/colorTypeContext';
 
 // Import your global CSS file
 import "../global.css"; 
@@ -11,9 +10,7 @@ import "../global.css";
 const RootLayout = () => {
   return (
     <ThemeProvider>
-      <ColorTypeProvider>
         <Layout/>
-      </ColorTypeProvider>
     </ThemeProvider>
   )
 }
@@ -25,6 +22,7 @@ const Layout = () => {
           <Drawer 
               screenOptions={{
                 swipeEnabled:false,
+                // headerShown:false,
                 header: ({navigation}) => <CustomDrawerHeader navigation={navigation} tabName={""} />
               }
             }>
@@ -37,3 +35,4 @@ const Layout = () => {
 }
 
 export default RootLayout
+

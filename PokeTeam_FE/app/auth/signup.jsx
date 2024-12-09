@@ -1,4 +1,4 @@
-import {Text, View, TextInput, Dimensions, KeyboardAvoidingView, ActivityIndicator, ScrollView, Platform} from 'react-native'
+import {Image,StyleSheet,Text, View, TextInput, Dimensions, KeyboardAvoidingView, ActivityIndicator, ScrollView, Platform} from 'react-native'
 import React, {useState} from 'react'
 import { useTheme } from '../../contexts/ThemeContext'
 import { colorsPalette } from '../../assets/colorsPalette'
@@ -20,6 +20,7 @@ const SignUp = () => {
   const [msgErreur, setMsgErreur] = useState("")
   const [loading, setLoading] = useState(false)
   const colors = colorsPalette[theme]
+  const text = "Créez votre compte"
   
 
   const [form, setForm] = useState({username:"",email:"",password:""})
@@ -85,9 +86,17 @@ const SignUp = () => {
           className="flex-1 items-center"
           >
             <ScrollView showsVerticalScrollIndicator={false}>
-              <Text className="text-7xl font-bold tracking-[2px] text-center pt-24 pb-16" style={{color:colors.primary}}>PokéTeam</Text>
+            <Image className="width" style={styles.image} 
+                source={require('/root/420-512-MV_PokeTeam/PokeTeam_FE/assets/images/poketeamlogo.jpg')} 
+            />
               <View className="flex-1 justify-center items-center gap-8" >
-                <Text className="text-4xl font-semibold pb-4" style={{color:colors.text}}>Créez votre compte</Text>
+              <Text style={styles.text}>
+              {text.split('').map((letter, index) => (
+                <View key={index} style={styles.letterContainer}>
+                  <Text style={styles.letter}>{letter}</Text>
+                </View>
+              ))}
+            </Text>
                 {loading ? <ActivityIndicator size="large" color={colors.primary} /> : null}
 
                 {!msgErreur == "" ? 
@@ -161,5 +170,26 @@ const SignUp = () => {
 }
 
 export default SignUp
+
+const styles = StyleSheet.create({
+  image: {
+    width: 300,
+    height: 150,
+    resizeMode: 'contain',
+    marginBottom: 30,
+  },
+  text: {
+    flexDirection: 'row', // Aligne les lettres horizontalement
+  },
+  letter: {
+    color: '#ffdb4e', // Couleur du texte (jaune)
+    fontSize: 32, // Taille de la police
+    fontWeight: 'bold', // Poids de la police
+    textShadowColor: 'blue', // Couleur du contour
+    textShadowOffset: { width: 3, height: 3 }, // Décale l'ombre pour simuler un contour
+    textShadowRadius: 3, // Fait en sorte que l'ombre soit un peu floue pour un effet plus doux
+  },
+});
+
 
 

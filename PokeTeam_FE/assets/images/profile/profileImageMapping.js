@@ -1,3 +1,5 @@
 export const ProfileImageMapping = {
-    'default' : require("./default.jpg"),
+    'chiot1' : require("./chiot1.jpg"),
+    'chiot4' : require("./chiot4.jpg"),
+
 }
