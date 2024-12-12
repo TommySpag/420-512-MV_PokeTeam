@@ -19,8 +19,14 @@ const generations = () => {
 
   useEffect(() => {
     const loadData = async () => {
-        setNbOfGens(getNbGenerations());
+        const nbGenerations = await getNbGenerations();
+        setNbOfGens(nbGenerations);
+    }
+    loadData();
+  }, [])
 
+  useEffect(() => {
+    if(nbOfGens !== 0){
         for (let i = 0; i < nbOfGens; i++) {
             viewsPerGen.push(
             <View key={i}>
@@ -29,8 +35,7 @@ const generations = () => {
             );
         }
     }
-    loadData();
-  }, [])
+  }, [nbOfGens])
 
   return (
         <View className="h-full pb-16" style={{backgroundColor:colors.background_c1}}>
