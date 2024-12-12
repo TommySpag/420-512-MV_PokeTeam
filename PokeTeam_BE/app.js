@@ -287,6 +287,76 @@ app.put("/pokeusers/addpoke/:userid/:pokeid", async (req, res) => {
     }
 });
 
+
+app.put("/pokeusers/removepoke/:userid/:pokeid", async (req, res) => {
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (!token) return res.status(403).send('Forbidden');
+    const userId = req.params.userid;
+    const removedPokeId = req.params.pokeid;
+
+    // Verify the token
+    const decoded = jwt.verify(token, SECRET_KEY); // Synchronous verification
+    if (!decoded?.userId) {
+        return res.status(401).json({ error: "Forbidden: badToken" });
+    }
+
+    if (decoded.userId != userId) {
+        return res.status(409).json({ error: "Forbidden: you are not allowed to get this info" });
+    }
+
+    const user = await getPokeUserById(userId);
+        if (!user) {
+            return res.status(404).json({ error: `Error while updating data` });
+        }
+
+    try {
+        const pokeTeam = {
+            pokemon1_id:"",
+            pokemon2_id:"",
+            pokemon3_id:"",
+            pokemon4_id:"",
+            pokemon5_id:"",
+            pokemon6_id:""
+        }
+        let list = []
+
+        
+        for(let i=1 ; i <= 6 ; i ++){ 
+            list[i-1] = user[`pokemon${i}_id`];
+
+        }
+
+        for (let ii = 0; ii <= 5; ii++) {
+            if(list[ii] == removedPokeId ){
+                list.pop(list[ii])
+                break
+            }
+            
+        }
+
+        list+=""
+
+        for(let iii=1 ; iii <= 6 ; iii ++){ 
+            pokeTeam[`pokemon${iii}_id`] = list[iii] ;
+            
+        }
+
+        const result = await updatePokeUserTeam(userId,pokeTeam)
+        if (!result) {
+            return res.status(500).json({ error: `Error executing query` });
+        }
+
+        // Return the information
+        res.status(200).json({
+            message: "Success"
+        });
+    } catch (error) {
+        console.error('Error updating profile Data: ', error);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
+
 app.post("/pokeusers/authenticate", async (req, res) => {
 
     try {

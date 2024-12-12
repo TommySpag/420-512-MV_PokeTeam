@@ -186,12 +186,11 @@ export async function getPokemonByType(pokeType){
         console.log("Trying to getPokemonByType with type : " + pokeType)
         const type = await fetch(`https://pokeapi.co/api/v2/type/${pokeType}`)
 
-        if(!(updateData.status == 200)) throw Error;
+        if(!(type.status == 200)) throw Error;
 
-        if(!id ){
+        if(!type ){
             throw new Error('no response : 404')
         }
-        if( id.status != 200) throw new Error('responded with error')
         return type.pokemon
     } catch (error) {
         console.log(`axios.js : ${error}`)
@@ -203,7 +202,7 @@ export async function getPokemonInfoByName(pokeName){
         const pokemon = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokeName}`)
 
         if(!pokemon ){
-            throw new Error('no response : 404')
+            throw new Error('no response : 404');
         }
         if( pokemon.status != 200) throw new Error('responded with error')
         return {
@@ -214,6 +213,19 @@ export async function getPokemonInfoByName(pokeName){
             weight: pokemon.weight,
             sprite: pokemon.sprites[front_default]
         }
+    }
+    catch(error){
+        console.log(`axios.js : ${error}`)
+    }
+}
+
+// done, works (❁´◡`❁) -raphee ☻
+export async function getNbGenerations(){
+    try{
+        console.log("Trying to getAllGenerations");
+        const generationsResponseawait = await axios.get("https://pokeapi.co/api/v2/generation");
+        if(generationsResponseawait.status != 200) throw new Error('responded with error');
+        return generationsResponseawait.data.count;
     }
     catch(error){
         console.log(`axios.js : ${error}`)

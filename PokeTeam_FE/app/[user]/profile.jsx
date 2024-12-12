@@ -102,6 +102,9 @@ const profile = () => {
     setToken('')
     route.push('/')
   }
+  const goToGens = () => {
+    route.push('./generations')
+  }
  
   
   
