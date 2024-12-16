@@ -1,33 +1,54 @@
 // colors.js
 export const colorsPalette = {
   light:{
-    primary: '#094582',//red
-    secondary: '#db3445',//red
+    primary: '#094582',//blue
+    secondary: 'blue',//blue
     background_c1:'#DF1818',//red que veux tommy 
-    background: '#f9c0b2',//red + pale 
+    background: '#850002',//red fonce 
     text: '#2c3e50', // blue marin
     link: 'blue', //blue
     alert: '#ba1313', //red alert
     lightText: 'white',//blanc
     lightAlert: '#db8f8f',//red pale
-    black:"000000",//noir
+    black:'white',//noir
     // red: #db3445
     text2: '#ffdb4e', // jaune
+
+    letter: {
+      color: '#FEC10C', // Couleur du texte (jaune)
+      fontSize: 32, // Taille de la police
+      fontWeight: 'bold', // Poids de la police
+      textShadowColor: '#2D4596', // Couleur du contour
+      textShadowOffset: { width: 3, height: 3 }, // Décale l'ombre pour simuler un contour
+      textShadowRadius: 3, // Fait en sorte que l'ombre soit un peu floue pour un effet plus doux
+    },
+
+
+
   },
   dark:{
     primary: '#db3445',
     secondary: '#db3445',
     background_c1: '#282A3A',
     background: 'black',
-    text: 'white',
+    text: '',
     link: 'yellow',
     alert: '#ba1313',
-    lightText: 'black',
+    lightText: '',
     lightAlert: '#db8f8f',
-    black:"white"
+    black:"",
+    text2: 'ff6500', // jaune
 
-  }
-    
+    letter: {
+      color: '#DF1818', // Couleur du texte (jaune)
+      fontSize: 32, // Taille de la police
+      fontWeight: 'bold', // Poids de la police
+      textShadowColor: 'black', // Couleur du contour
+      textShadowOffset: { width: 3, height: 3 }, // Décale l'ombre pour simuler un contour
+      textShadowRadius: 3, // Fait en sorte que l'ombre soit un peu floue pour un effet plus doux
+    },
+
+  }  
   };
 
 

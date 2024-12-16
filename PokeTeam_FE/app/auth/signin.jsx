@@ -76,13 +76,13 @@ const signin = () => {
         <ScrollView showsVerticalScrollIndicator={false}>
 
           <Image className="width" style={styles.image}
-            source={require('/root/420-512-MV_PokeTeam/PokeTeam_FE/assets/images/poketeamlogo.jpg')}
+            source={require('../../assets/images/poketeamlogo.jpg')}
           />
           <View className="flex-1 justify-center items-center gap-8" >
             <Text style={styles.text}>
               {text.split('').map((letter, index) => (
                 <View key={index} style={styles.letterContainer}>
-                  <Text style={styles.letter}>{letter}</Text>
+                  <Text style={colors.letter}>{letter}</Text>
                 </View>
               ))}
             </Text>
@@ -112,7 +112,7 @@ const signin = () => {
 
               <View className="justify-end items-end" style={{ width: WIDTH_BTN }} >
                 <Link href="./recovery">
-                  <Text style={{ color: colors.black }}>Identifiant oublié?</Text>
+                  <Text style={{ color: colors.black}}>Identifiant oublié?</Text>
                 </Link>
               </View>
               {alertIdentifier ? <Text className="pt-1" style={{ color: colors.alert }}>Identifiant : Ce champs doit être rempli</Text> : null}
@@ -164,13 +164,6 @@ const styles = StyleSheet.create({
   text: {
     flexDirection: 'row', // Aligne les lettres horizontalement
   },
-  letter: {
-    color: '#ffdb4e', // Couleur du texte (jaune)
-    fontSize: 32, // Taille de la police
-    fontWeight: 'bold', // Poids de la police
-    textShadowColor: 'blue', // Couleur du contour
-    textShadowOffset: { width: 3, height: 3 }, // Décale l'ombre pour simuler un contour
-    textShadowRadius: 3, // Fait en sorte que l'ombre soit un peu floue pour un effet plus doux
-  },
+
   
 });

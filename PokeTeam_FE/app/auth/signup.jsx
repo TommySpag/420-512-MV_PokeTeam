@@ -87,7 +87,7 @@ const SignUp = () => {
           >
             <ScrollView showsVerticalScrollIndicator={false}>
             <Image className="width" style={styles.image} 
-                source={require('/root/420-512-MV_PokeTeam/PokeTeam_FE/assets/images/poketeamlogo.jpg')} 
+                source={require('../../assets/images/poketeamlogo.jpg')} 
             />
               <View className="flex-1 justify-center items-center gap-8" >
               <Text style={styles.text}>

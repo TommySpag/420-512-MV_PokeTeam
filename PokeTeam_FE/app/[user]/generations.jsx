@@ -86,7 +86,7 @@ const generations = () => {
         <Text style={styles.text}>
           {'Générations'.split('').map((letter, index) => (
             <View key={index}>
-              <Text style={styles.letter}>{letter}</Text>
+              <Text style={colors.letter}>{letter}</Text>
             </View>
           ))}
         </Text>
@@ -146,14 +146,7 @@ const styles = StyleSheet.create({
   text: {
     flexDirection: 'row',
   },
-  letter: {
-    color: '#ffdb4e',
-    fontSize: 32,
-    fontWeight: 'bold',
-    textShadowColor: 'blue',
-    textShadowOffset: { width: 3, height: 3 },
-    textShadowRadius: 3,
-  },
+ 
 });
 
 export default generations;
