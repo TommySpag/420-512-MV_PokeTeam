@@ -196,26 +196,30 @@ export async function getPokemonByType(pokeType){
         console.log(`axios.js : ${error}`)
     }
 }
-export async function getPokemonInfoByName(pokeName){
-    try{
-        console.log("Trying to getPokemonInfoByName with name : " + pokeName)
-        const pokemon = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokeName}`)
 
-        if(!pokemon ){
-            throw new Error('no response : 404');
+export async function getPokemonInfoByName(pokeName) {
+    try {
+        console.log("Trying to getPokemonInfoByName with name: " + pokeName);
+
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokeName}`);
+
+        if (!response.ok) {
+            throw new Error(`Error fetching data for ${pokeName}: ${response.status}`);
         }
-        if( pokemon.status != 200) throw new Error('responded with error')
+
+        const pokemon = await response.json();
+
         return {
             id: pokemon.id,
             name: pokemon.name,
             types: pokemon.types,
             abilities: pokemon.abilities,
             weight: pokemon.weight,
-            sprite: pokemon.sprites[front_default]
-        }
-    }
-    catch(error){
-        console.log(`axios.js : ${error}`)
+            sprite: pokemon.sprites.front_default, 
+        };
+    } catch (error) {
+        console.log(`Error in getPokemonInfoByName: ${error.message}`);
+        return null; 
     }
 }
 
@@ -229,5 +233,28 @@ export async function getNbGenerations(){
     }
     catch(error){
         console.log(`axios.js : ${error}`)
+    }
+}
+
+//done by Lamb.
+export async function getStartersForGeneration(generationId) {
+    try {
+        console.log(`Trying to get starters for Generation ${generationId}`);
+
+        const response = await axios.get(`https://pokeapi.co/api/v2/generation/${generationId}/`);
+        
+        if (response.status !== 200) {
+            throw new Error('PokeAPI responded with an error');
+        }
+        if(generationId == 9 || generationId == 5){
+            const startersNames = response.data.pokemon_species.slice(1, 4).map(starter => starter.name);
+            return startersNames;
+        }else{
+            const startersNames = response.data.pokemon_species.slice(0, 3).map(starter => starter.name);
+            return startersNames;
+    }
+    } catch (error) {
+        console.error(`Error in getStartersForGeneration: ${error.message}`);
+        return [];
     }
 }
