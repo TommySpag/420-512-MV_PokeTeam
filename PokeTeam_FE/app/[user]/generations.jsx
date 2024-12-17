@@ -57,17 +57,17 @@ const generations = () => {
           newViews.push(
             <TouchableOpacity
               key={i}
-              style={styles.button}
+              className="bg-yellow-400 my-3 py-4 px-8 rounded-lg items-center justify-center"
             >
-              <Text style={styles.buttonText}>Génération {i + 1}</Text>
-              <View style={styles.startersContainer}>
-              {startersData && startersData.map((pokemon, idx) => (
-                pokemon ? (
-                  <View key={idx} style={styles.pokemonInfo}>
-                    <Image source={{ uri: pokemon.sprite }} style={styles.image} />
-                  </View>
-                ) : null
-              ))}
+              <Text className="text-xl font-bold text-gray-800">Génération {i + 1}</Text>
+              <View className="flex-row flex-wrap justify-center items-center mt-3">
+                {startersData && startersData.map((pokemon, idx) => (
+                  pokemon ? (
+                    <View key={idx} className="items-center mx-2 my-2">
+                      <Image source={{ uri: pokemon.sprite }} className="w-12 h-12 object-contain mb-2" />
+                    </View>
+                  ) : null
+                ))}
               </View>
             </TouchableOpacity>
           );
@@ -99,50 +99,7 @@ const generations = () => {
 };
 
 const styles = StyleSheet.create({
-  button: {
-    backgroundColor: '#ffdb4e',
-    marginVertical: 10,
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  starterText: {
-    fontSize: 14,
-    color: '#555555',
-  },
-  startersContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  pokemonInfo: {
-    alignItems: 'center',
-    marginHorizontal: 10,
-    marginVertical: 5,
-  },
-  image: {
-    width: 50,
-    height: 50,
-    resizeMode: 'contain',
-    marginBottom: 10,
-  },
-  pokemonInfo: {
-    alignItems: 'center',
-    marginVertical: 5,
-  },
-  pokemonName: {
-    fontSize: 16,
-    color: '#333',
-  },
-  buttonText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-  },
+
   text: {
     flexDirection: 'row',
   },
