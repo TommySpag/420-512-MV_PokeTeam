@@ -4,10 +4,14 @@ import React, { useEffect, useState } from 'react'
 import { useTheme } from '../../contexts/ThemeContext'
 import { colorsPalette } from '../../assets/colorsPalette'
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { fetchProfileData, setToken, updateProfileData, deleteUserById } from '../../lib/axios'
+import { fetchProfileData, setToken, updateProfileData, deleteUserById, getPokemonInfoByName } from '../../lib/axios'
 import {useGlobalSearchParams, useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+
 
 const WIDTH = Dimensions.get('window').width
+
+
  
 const profile = () => {
   const {theme} = useTheme()
@@ -16,16 +20,27 @@ const profile = () => {
   const route = useRouter()
  
   //Default Data
+  
   const [username,setUsername] = useState("Default")
   const [email,setEmail] = useState('Default@abc.ca')
-  const [profilePic, setProfilePic] = useState('')
+  const [profilePic, setProfilePic] = useState('');
+  const [pokeTeam, setPokeTeam] = useState([25,3,6,9,143,131]);
+  const [teamRating, setTeamRating] = useState(0);
+  const [motDePasse, setMotDePasse] = useState('*****');
+  const [pokemonData, setPokemonData] = useState([]);
+
+  //use pokedate pour display les pokemon (map) pokedata[0] = premier (pokemon pokemonData[0].pokename.sprite)
+
   //States
   const [isEditing,setIsEditing] = useState(false)
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [messageVisible, setMessageVisible] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isEditSuccess, setIsEditSuccess] = useState(false)
+
   //On mount
+
+  //Lam
   useEffect(() => {
     // Fetch profile data
  
@@ -38,56 +53,84 @@ const profile = () => {
           if(profileData.profilePic){
             setProfilePic(profileData.profilePic);
           }
+          const tempList = [];
+          for (let i; i < 6; i++){
+            let key = `pokemon${i}_id`
+            tempList.push(profileData[key])
+          }
+          // setPokeTeam(tempList);
+          
+          setTeamRating(Math.round(profileData.team_grade));
+          
         }catch(error){
           console.log('Profile : Failed Loading profileData : ', error)
           route.push("/auth/signin")
         }
       };
-      
+
       loadProfileData();
-    
+
     setIsMounted(true);
  
     return () => {
       setIsMounted(false); // Clean up on unmount
     };
   }, []);
+
+  const fetchPokemonDataByName = async (pokeName) => {
+    const pokemon = await getPokemonInfoByName(pokeName);
+    return pokemon;
+  };
+
+  useEffect(() => {
+    const fetchPokemonInfo = async () => {
+      const pokemonInfoPromises = pokeTeam.map(async (pokeId) =>{
+        const pokemonData = await fetchPokemonDataByName(pokeId);
+        return pokemonData;
+      });
+      const results = await Promise.all(pokemonInfoPromises);
+      setPokemonData(results);
+    };
+    fetchPokemonInfo();
+  },[pokeTeam])
+
+   //Lam
  
   //Saves and gives a feedback to user
-  const handleSave = async () => {
+  // const handleSave = async () => {
     
-    isSaved = false
-    const saveProfileData = async () => {
+  //   isSaved = false
+  //   const saveProfileData = async () => {
       
-      const userData = {
-        username,
-        email,
-        profilePic,
-        id: glob.user
-      }
-      try{
-        isSaved = await updateProfileData(userData)
-      }catch(error){
-        console.log("Saving Error : " , error)
-        isSaved = false
-      }
-      return isSaved
-    }
-    setIsEditSuccess(await saveProfileData())
-    setMessageVisible(true);
-    setTimeout(() => {
-      setMessageVisible(false);
-    }, 2000);
+  //     const userData = {
+  //       username,
+  //       email,
+  //       profilePic,
+  //       id: glob.user
+  //     }
+  //     try{
+  //       isSaved = await updateProfileData(userData)
+  //     }catch(error){
+  //       console.log("Saving Error : " , error)
+  //       isSaved = false
+  //     }
+  //     return isSaved
+  //   }
+  //   setIsEditSuccess(await saveProfileData())
+  //   setMessageVisible(true);
+  //   setTimeout(() => {
+  //     setMessageVisible(false);
+  //   }, 2000);
    
-  };
+  // };
  
   //Handle changes in editing/non-editing mode
-  useEffect(()=>{
-    if(!isMounted) return
-    if(!isEditing){
-      handleSave()
-    }
-  },[isEditing,theme])
+  // useEffect(()=>{
+  //   if(!isMounted) return
+  //   if(!isEditing){
+  //     handleSave()
+  //   }
+  // },[isEditing,theme])
  
   
   const supprimerUser = async () => {
@@ -105,6 +148,16 @@ const profile = () => {
   const goToGens = () => {
     route.push('./generations')
   }
+
+  const Item = ({item}) => (
+    
+      <View className = "flex items-center justify-center w-24 mt-8">
+        <Image source={{ uri: item.sprite }} className="w-12 h-12 object-contain mb-2" />
+        <Text className = "text-center">{item.name}</Text>
+      </View>
+    
+  );
+   
  
   
   
@@ -120,8 +173,9 @@ const profile = () => {
               style={isEditing ? {borderWidth:4, borderColor:colors.lightAlert} : {}}
             >
               <Image
-                  className="w-40 h-40  rounded-full"
-                  // source={profilePic}
+                 
+                  style={{ width: 150, height: 150, borderRadius: 9999 }}
+                  source={require('../../assets/images/profile/red.jpg')}
                   />
             </TouchableOpacity>
             <View className="">
@@ -147,9 +201,27 @@ const profile = () => {
                 <Text className="py-3 px-2" style={{color:colors.text}}>{email}</Text>
                 :
                 <TextInput
-                className="justify-center z-0 py-5 rounded-lg text-center w-full"
-                style={[{color:colors.text, backgroundColor:colors.background_c1}]}
+                className="justify-center z-0 py-5 rounded-lg text-center w-full py-5 rounded-lg text-center focus:border-2"
+                style={[{color:colors.text2, backgroundColor: colors.background}]}
                 onChangeText={(item) => {setEmail(item)}}
+                placeholder="Entrez l'identifiant"
+                placeholderTextColor={colors.text2}
+                value={email}
+                />
+            }
+            </View>
+          </View>
+
+          <View className="items-center mt-8">
+            <View className="items-center border rounded-md w-2/4" style={{borderColor:isEditing ?  colors.lightAlert :colors.primary}}>
+              <Text className="absolute z-10 -top-2.5 left-3 px-1" style={{backgroundColor:colors.background_c1, color:colors.text}}>mot de passe</Text>
+              {!isEditing ?
+                <Text className="py-3 px-2" style={{color:colors.background}}>{motDePasse}</Text>
+                :
+                <TextInput
+                className="justify-center z-0 py-5 rounded-lg text-center w-full"
+                style={[{color:colors.text, backgroundColor:colors.background}]}
+                onChangeText={(item) => {setMotDePasse(item)}}
                 placeholder="Entrez l'identifiant"
                 placeholderTextColor={colors.secondary}
                 value={email}
@@ -157,6 +229,35 @@ const profile = () => {
             }
             </View>
           </View>
+
+          <View className="items-center mt-8">
+            <FlatList numColumns={3} 
+              data={pokemonData}
+              renderItem={Item}
+              keyExtractor={item => item.id}
+            />
+          </View>
+
+
+          <View className="items-center mt-8">
+            <Text className="text-lg mb-4 font-semibold text-gray-700">
+               Note de l'équipe
+            </Text>
+
+            <View className="flex-row">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Ionicons
+                  key={star}
+                  name={star <= teamRating ? 'star' : 'star-outline'} 
+                  size={32}
+                  color={star <= teamRating ? '#FACC15' : '#D1D5DB'} 
+                />
+              ))}
+            </View>
+
+            <Text className="mt-3 text-gray-600"> Note : {teamRating} sur 5</Text>
+          </View>
+          
         </View>
      
  
