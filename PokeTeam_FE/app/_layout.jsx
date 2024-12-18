@@ -6,11 +6,16 @@ import CustomDrawerHeader from '../components/CustomDrawerHeader';
 
 // Import your global CSS file
 import "../global.css"; 
+import { LoadingProvider } from '../contexts/loadingContext';
+import GlobalLoading  from "../components/GlobalLoading";
 
 const RootLayout = () => {
   return (
     <ThemeProvider>
+      <LoadingProvider>
+        <GlobalLoading />
         <Layout/>
+      </LoadingProvider>
     </ThemeProvider>
   )
 }
@@ -26,8 +31,8 @@ const Layout = () => {
                 header: ({navigation}) => <CustomDrawerHeader navigation={navigation} tabName={""} />
               }
             }>
-              <Drawer.Screen name="index" options={{headerShown:false}} />
-              <Drawer.Screen name="auth" options={{headerShown:false}} />
+              <Drawer.Screen name="index" options={{headerShown:true}} />
+              <Drawer.Screen name="auth" options={{headerShown:true}} />
           </Drawer>
         </GestureHandlerRootView>
     </>
@@ -35,4 +40,3 @@ const Layout = () => {
 }
 
 export default RootLayout
-

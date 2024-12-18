@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import { fetchProfileData, setToken, updateProfileData, deleteUserById, getPokemonInfoByName } from '../../lib/axios'
 import {useGlobalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-
+import { useLoading } from '../../contexts/loadingContext'
 
 const WIDTH = Dimensions.get('window').width
 
@@ -18,6 +18,7 @@ const profile = () => {
   const colors = colorsPalette[theme]
   const glob = useGlobalSearchParams();
   const route = useRouter()
+  const { setLoading } = useLoading();
  
   //Default Data
   
@@ -46,6 +47,7 @@ const profile = () => {
  
       const loadProfileData = async () => {
         try{
+          setLoading(true);
           const profileData = await fetchProfileData(glob.user);
           if(!profileData) throw new Error('Failed fetching data -> no Data')
           setUsername(profileData.username);
@@ -66,6 +68,7 @@ const profile = () => {
           console.log('Profile : Failed Loading profileData : ', error)
           route.push("/auth/signin")
         }
+        setLoading(false);
       };
 
       loadProfileData();

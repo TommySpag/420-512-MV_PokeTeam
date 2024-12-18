@@ -3,6 +3,7 @@
 import { Image, Text, View, StyleSheet, ScrollView, Dimensions, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useLoading } from '../../contexts/loadingContext';
 import { colorsPalette } from '../../assets/colorsPalette';
 import { getNbGenerations, getStartersForGeneration, getPokemonInfoByName} from '../../lib/axios';
 import { useGlobalSearchParams, useRouter } from 'expo-router';
@@ -18,12 +19,15 @@ const generations = () => {
   const [viewsPerGen, setViewsPerGen] = useState([]);
   const [pokemonData, setPokemonData] = useState([]);
 
+  const { setLoading } = useLoading();
+
   useEffect(() => {
+    setLoading(true);
     const loadData = async () => {
       const nbGenerations = await getNbGenerations();
       setNbOfGens(nbGenerations);
     };
-    loadData();
+    loadData().finally(() => setLoading(false));;
   }, []);
 
   useEffect(() => {
@@ -46,6 +50,7 @@ const generations = () => {
       };
 
       const generateButtons = async () => {
+        setLoading(true);
         for (let i = 0; i < nbOfGens; i++) {
           const starters = await fetchStarters(i + 1);
           const startersData = await Promise.all(
@@ -74,6 +79,7 @@ const generations = () => {
         }
 
         setViewsPerGen(newViews);
+        setLoading(false);
       };
 
       generateButtons();
