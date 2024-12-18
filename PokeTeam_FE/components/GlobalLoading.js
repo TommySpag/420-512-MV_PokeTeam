@@ -54,7 +54,6 @@ const GlobalLoading = () => {
       return; 
     }
 
-
     const shuffledSprites = [...sprites].sort(() => Math.random() - 0.5).slice(0, 6);
     setRandomSprites(shuffledSprites);
 
@@ -89,6 +88,7 @@ const GlobalLoading = () => {
 
   return (
     <View style={styles.overlay}>
+      <Image style={styles.image} source={require('../assets/images/poketeamlogo.jpg')} />
       <FlatList
         data={randomSprites}
         keyExtractor={(item) => item.id.toString()}
@@ -110,7 +110,16 @@ const GlobalLoading = () => {
   );
 };
 
+export default GlobalLoading;
+
 const styles = {
+  image: {
+    width: 300,
+    height: 150,
+    resizeMode: 'contain',
+    transform: [{ translateY: 200 }],
+    opacity: 0.7,
+  },
   overlay: {
     position: 'absolute',
     top: 0,
@@ -121,11 +130,15 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1000,
+    display: 'flex',
+    flexDirection: 'column',
+    padding: 20,
   },
   listContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    transform: [{ translateY: -50 }],
   },
   spriteContainer: {
     marginRight: 12,
@@ -136,5 +149,3 @@ const styles = {
     height: 10,
   },
 };
-
-export default GlobalLoading;
