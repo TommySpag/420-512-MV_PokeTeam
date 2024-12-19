@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useTheme } from '../../contexts/ThemeContext'
 import { colorsPalette } from '../../assets/colorsPalette'
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { fetchProfileData, setToken, updateProfileData, deleteUserById, getPokemonInfoByName } from '../../lib/axios'
+import { fetchProfileData, setToken, updateProfileData, deleteUserById, getPokemonInfoByName, updateTeamData } from '../../lib/axios'
 import { useGlobalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useLoading } from '../../contexts/loadingContext';
@@ -30,6 +30,7 @@ const profile = () => {
   const [teamRating, setTeamRating] = useState(0);
   const [motDePasse, setMotDePasse] = useState('*****');
   const [pokemonData, setPokemonData] = useState([]);
+  const [selectedPokemonIndex, setSelectedPokemonIndex] = useState(null);
 
   //use pokedate pour display les pokemon (map) pokedata[0] = premier (pokemon pokemonData[0].pokename.sprite)
 
@@ -47,33 +48,33 @@ const profile = () => {
   useEffect(() => {
     // Fetch profile data
 
-      const loadProfileData = async () => {
-        try{
-          setLoading(true);
-          const profileData = await fetchProfileData(glob.user);
-          if(!profileData) throw new Error('Failed fetching data -> no Data')
-          setUsername(profileData.username);
-          setEmail(profileData.email);
-          if(profileData.profilePic){
-            setProfilePic(profileData.profilePic);
-          }
-          const tempList = [];
-          for (let i; i < 6; i++){
-            let key = `pokemon${i}_id`
-            tempList.push(profileData[key])
-          }
-          // setPokeTeam(tempList);
-
-          setTeamRating(Math.round(profileData.team_grade));
-
-        }catch(error){
-          console.log('Profile : Failed Loading profileData : ', error)
-          route.push("/auth/signin")
+    const loadProfileData = async () => {
+      try {
+        setLoading(true);
+        const profileData = await fetchProfileData(glob.user);
+        if (!profileData) throw new Error('Failed fetching data -> no Data')
+        setUsername(profileData.username);
+        setEmail(profileData.email);
+        if (profileData.profilePic) {
+          setProfilePic(profileData.profilePic);
         }
-        setLoading(false);
-      };
+        const tempList = [];
+        for (let i; i < 6; i++) {
+          let key = `pokemon${i}_id`
+          tempList.push(profileData[key])
+        }
+        // setPokeTeam(tempList);
 
-      loadProfileData();
+        setTeamRating(Math.round(profileData.team_grade));
+
+      } catch (error) {
+        console.log('Profile : Failed Loading profileData : ', error)
+        route.push("/auth/signin")
+      }
+      setLoading(false);
+    };
+
+    loadProfileData();
 
     setIsMounted(true);
 
@@ -155,39 +156,61 @@ const profile = () => {
     route.push('./generations')
   }
 
-  const Item = ({ item }) => (
+  const swapPokemon = (index) => {
+    if (selectedPokemonIndex === null) {
+      setSelectedPokemonIndex(index);
+    } else {
+      let updatedTeam = [...pokeTeam];
+      const temp = updatedTeam[selectedPokemonIndex];
+      updatedTeam[selectedPokemonIndex] = updatedTeam[index];
+      updatedTeam[index] = temp;
+  
+      setPokeTeam(updatedTeam);
 
-    <View className="flex items-center justify-center w-24 mt-8">
-      <Image source={{ uri: item.sprite }} className="w-12 h-12 object-contain mb-2" />
-      <Text className="text-center">{item.name}</Text>
+      saveNewPokemonOrder(updatedTeam);
+  
+      setSelectedPokemonIndex(null);
+    }
+  };
+  const Item = ({ item, index }) => (
+    <View className="flex items-center justify-center w-30 mt-8">
+      <TouchableOpacity 
+        onPress={() => swapPokemon(index)} 
+        className="mx-2 py-4 px-2 rounded-lg items-center justify-center bg-btnColor w-[100px] h-[120px] flex-shrink-0 flex-grow-0"
+        style={{backgroundColor:colors.btnColor}}
+      >
+        <Image source={{ uri: item.sprite }} className="w-12 h-12 object-contain" />
+        <Text className="text-center font-bold w-full text-center overflow-hidden">{item.name}</Text>
+      </TouchableOpacity>
     </View>
-
   );
 
-  const requestCameraPermission = async () => {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== 'granted') {
-      alert('Camera access is required to upload profile pictures.');
-      return false;
+  const saveNewPokemonOrder = async (newOrder) => {
+    try {
+      await updateTeamData(newOrder);
+      console.log('Pokemon order updated successfully');
+    } catch (error) {
+      console.error('Error updating Pokemon order:', error);
     }
-    return true;
   };
 
   const handleProfilePicPress = async () => {
     const hasPermission = await requestCameraPermission();
     if (!hasPermission) return;
-  
+
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.Images,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
     });
-  
+
     if (!result.canceled) {
       setProfilePic(result.assets[0].uri);
     }
   };
+
+
 
   return (
     <>
@@ -262,7 +285,7 @@ const profile = () => {
           </View>
 
           <View className="items-center mt-8">
-            <FlatList 
+            <FlatList
               scrollEnabled={false}
               numColumns={3}
               data={pokemonData}
