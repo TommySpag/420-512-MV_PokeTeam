@@ -13,6 +13,7 @@ export const colorsPalette = {
     black:'white',//noir
     // red: #db3445
     text2: '#ffdb4e', // jaune
+    btnColor: '#FEC10C',
 
     letter: {
       color: '#FEC10C', // Couleur du texte (jaune)
@@ -38,6 +39,7 @@ export const colorsPalette = {
     lightAlert: '#db8f8f',
     black:"",
     text2: 'ff6500', // jaune
+    btnColor: '#DF1818',
 
     letter: {
       color: '#DF1818', // Couleur du texte (jaune)
