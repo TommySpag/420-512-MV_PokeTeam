@@ -258,3 +258,29 @@ export async function getStartersForGeneration(generationId) {
         return [];
     }
 }
+
+export async function getPokemonDescriptionByName(pokeName) {
+    try {
+      console.log(`Trying to get description for Pokemon: ${pokeName}`);
+  
+      const response = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/${pokeName}/`);
+    
+      if (response.status !== 200) {
+        throw new Error('PokeAPI responded with an error');
+      }
+  
+      const flavorTextEntries = response.data.flavor_text_entries;
+
+      
+      const englishDescription = flavorTextEntries.find(entry => entry.language.name === 'en');
+  
+      if (englishDescription) {
+        return englishDescription.flavor_text; 
+      } else {
+        return 'No french description available for this Pokémon.'; 
+      }
+    } catch (error) {
+      console.error(`Error in getPokemonDescriptionByName: ${error.message}`);
+      return 'Failed to load description.';
+    }
+  }
