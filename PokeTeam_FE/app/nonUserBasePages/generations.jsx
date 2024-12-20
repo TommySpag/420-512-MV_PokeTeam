@@ -6,6 +6,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useLoading } from '../../contexts/loadingContext';
 import { colorsPalette } from '../../assets/colorsPalette';
 import { getNbGenerations, getStartersForGeneration, getPokemonInfoByName} from '../../lib/axios';
+import { useGenerationsTheme } from '../../contexts/generationContext';
 import { useGlobalSearchParams, useRouter } from 'expo-router';
 
 const WIDTH = Dimensions.get('window').width;
@@ -13,6 +14,7 @@ const WIDTH = Dimensions.get('window').width;
 const generations = () => {
   const { theme } = useTheme();
   const colors = colorsPalette[theme];
+  const {setGeneration} = useGenerationsTheme();
   const glob = useGlobalSearchParams();
   const route = useRouter();
   const [nbOfGens, setNbOfGens] = useState(0);
@@ -20,6 +22,10 @@ const generations = () => {
   const [pokemonData, setPokemonData] = useState([]);
 
   const { setLoading } = useLoading();
+
+  const goToPokemons = (generation) => {
+    setGeneration(generation);
+}
 
   useEffect(() => {
     setLoading(true);
@@ -64,6 +70,7 @@ const generations = () => {
               key={i}
               className="my-3 py-4 px-8 rounded-lg items-center justify-center"
               style={{backgroundColor:colors.btnColor}}
+              onPress={goToPokemons(i + 1)}
             >
               <Text className="text-xl font-bold text-gray-800">Génération {i + 1}</Text>
               <View className="flex-row flex-wrap justify-center items-center mt-3">

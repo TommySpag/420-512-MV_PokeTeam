@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Image, Text, View, Dimensions, ScrollView, Animated } from 'react-native';
 import { useLoading } from '../../contexts/loadingContext';
-import { getPokemonInfoById, getPokemonInfoByName, getPokemonDescriptionByName } from '../../lib/axios';
+import { getPokemonInfoByName, getPokemonDescriptionByName } from '../../lib/axios';
 import { useGlobalSearchParams } from 'expo-router';
 import { useTheme } from '../../contexts/ThemeContext';
+import { usePokemonTheme } from '../../contexts/pokemonContext';
 import { colorsPalette } from '../../assets/colorsPalette';
 
 // images imports
@@ -59,17 +60,15 @@ const PokemonDetails = () => {
     const { setLoading } = useLoading();
     const [fadeAnimation] = useState(new Animated.Value(0));
     const [currentText, setCurrentText] = useState('');
-
-
-    const pokeName = "charizard" //"charizard" "gengar" ; 
+    const {pokemonName} = usePokemonTheme();
 
     useEffect(() => {
         setLoading(true);
         const loadPokemonData = async () => {
             try {
                 // Fetch Pokémon data
-                const data = await getPokemonInfoByName(pokeName);
-                const desc = await getPokemonDescriptionByName(pokeName);
+                const data = await getPokemonInfoByName(pokemonName);
+                const desc = await getPokemonDescriptionByName(pokemonName);
                 setPokemon(data);
                 setDescription(desc);
             } catch (error) {
@@ -79,7 +78,7 @@ const PokemonDetails = () => {
             }
         };
         loadPokemonData();
-    }, [pokeName, setLoading]);
+    }, [pokemonName, setLoading]);
 
     useEffect(() => {
         Animated.timing(fadeAnimation, {
