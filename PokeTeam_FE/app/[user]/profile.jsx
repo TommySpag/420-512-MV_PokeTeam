@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useTheme } from '../../contexts/ThemeContext'
 import { colorsPalette } from '../../assets/colorsPalette'
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { fetchProfileData, setToken, updateProfileData, deleteUserById, getPokemonInfoByName, updateTeamData } from '../../lib/axios'
+import { fetchProfileData, setToken, updateProfileData, deleteUserById, getPokemonInfoByName, updateTeamData, uploadImageToGitHub } from '../../lib/axios'
 import { useGlobalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useLoading } from '../../contexts/loadingContext';
@@ -69,7 +69,7 @@ const profile = () => {
 
       } catch (error) {
         console.log('Profile : Failed Loading profileData : ', error)
-        route.push("/auth/signin")
+        // route.push("/auth/signin")
       }
       setLoading(false);
     };
@@ -157,6 +157,8 @@ const profile = () => {
   }
 
   const swapPokemon = (index) => {
+    if (!isEditing) return; // Prevent swapping if not in editing mode
+  
     if (selectedPokemonIndex === null) {
       setSelectedPokemonIndex(index);
     } else {
@@ -166,18 +168,19 @@ const profile = () => {
       updatedTeam[index] = temp;
   
       setPokeTeam(updatedTeam);
-
       saveNewPokemonOrder(updatedTeam);
   
       setSelectedPokemonIndex(null);
     }
   };
+  
   const Item = ({ item, index }) => (
     <View className="flex items-center justify-center w-30 mt-8">
-      <TouchableOpacity 
-        onPress={() => swapPokemon(index)} 
-        className="mx-2 py-4 px-2 rounded-lg items-center justify-center bg-btnColor w-[100px] h-[120px] flex-shrink-0 flex-grow-0"
-        style={{backgroundColor:colors.btnColor}}
+      <TouchableOpacity
+        onPress={() => swapPokemon(index)}
+        disabled={!isEditing} // Disable when not editing
+        className={`mx-2 py-4 px-2 rounded-lg items-center justify-center w-[100px] h-[120px] flex-shrink-0 flex-grow-0`}
+        style={{ backgroundColor: colors.btnColor }}
       >
         <Image source={{ uri: item.sprite }} className="w-12 h-12 object-contain" />
         <Text className="text-center font-bold w-full text-center overflow-hidden">{item.name}</Text>
@@ -194,23 +197,41 @@ const profile = () => {
     }
   };
 
+  const requestCameraPermission = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Camera access is required to upload profile pictures.');
+      return false;
+    }
+    return true;
+  };
+
   const handleProfilePicPress = async () => {
     const hasPermission = await requestCameraPermission();
     if (!hasPermission) return;
-
+  
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.Images,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
     });
-
+  
     if (!result.canceled) {
-      setProfilePic(result.assets[0].uri);
+      const fileUri = result.assets[0].uri;
+      if (!fileUri.startsWith('file://')) {
+        console.error('Invalid file URI:', fileUri);
+        return;
+      }
+  
+      try {
+        const uploadedImageUrl = await uploadImageToGitHub(fileUri, 'profile_pictures/myProfilePic.png');
+        setProfilePic(uploadedImageUrl); 
+      } catch (error) {
+        console.error('Failed to upload image:', error);
+      }
     }
   };
-
-
 
   return (
     <>

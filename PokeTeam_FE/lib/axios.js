@@ -313,4 +313,57 @@ export async function updateTeamRating(userData){
     } catch (error){
         throw new Error(error)
     }
-} 
+}
+
+
+const GITHUB_API = 'https://api.github.com';
+const GITHUB_REPO_OWNER = 'aliterallamb'; 
+const GITHUB_REPO_NAME = 'ReactAppImg'; 
+const GITHUB_TOKEN = 'enter generated key'; 
+
+
+export async function uploadImageToGitHub(fileUri, filePath) {
+    try {
+        console.log(`Uploading image to GitHub at path: ${filePath}`);
+
+        // Ensure the file URI is correct (should start with file://)
+        if (!fileUri.startsWith('file://')) {
+            throw new Error('Invalid file URI. Make sure it starts with "file://".');
+        }
+
+        // Read the image from the URI and convert it to base64
+        const base64Image = await getBase64(fileUri);
+
+        const response = await axios.put(
+            `${GITHUB_API}/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${filePath}`,
+            {
+                message: `Upload ${filePath}`,
+                content: base64Image,
+            },
+            {
+                headers: {
+                    Authorization: `token ${GITHUB_TOKEN}`,
+                },
+            }
+        );
+
+        console.log('Image uploaded successfully:', response.data.content.download_url);
+        return response.data.content.download_url;
+    } catch (error) {
+        console.error('Error uploading image to GitHub:', error.response?.data || error.message);
+        throw new Error('Failed to upload image to GitHub.');
+    }
+}
+
+const getBase64 = async (fileUri) => {
+    try {
+        console.log(`Reading file from URI: ${fileUri}`);
+        const base64Image = await FileSystem.readAsStringAsync(fileUri, {
+            encoding: FileSystem.EncodingType.Base64,
+        });
+        return base64Image;
+    } catch (error) {
+        console.error('Error reading file:', error);
+        throw new Error('Failed to read image file.');
+    }
+};

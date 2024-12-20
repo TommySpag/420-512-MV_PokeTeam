@@ -3,8 +3,9 @@ import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Image, Style
 import { useTheme } from '../../contexts/ThemeContext';
 import { useLoading } from '../../contexts/loadingContext';
 import { colorsPalette } from '../../assets/colorsPalette';
-import { getPokemonInfoByName, getAllPokeTeamsAndRatings, updateTeamRating } from '../../lib/axios'; // Updated import to include getAllPokeTeamsAndRatings
+import { getPokemonInfoByName, getAllPokeTeamsAndRatings, updateTeamRating } from '../../lib/axios'; 
 import { Ionicons } from '@expo/vector-icons';
+
 
 const TeamsPage = () => {
     const { theme } = useTheme();

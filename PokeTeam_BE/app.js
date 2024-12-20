@@ -424,6 +424,8 @@ app.get("/pokeusers/TeamAndRatings", async (req, res) => {
         // Return the information
         res.status(200).json(teamData.map(team => ({
             id: team.id,
+            username: team.username,
+            pfp: team.profilePic ,
             pokemon1_id: team.pokemon1_id,
             pokemon2_id: team.pokemon2_id,
             pokemon3_id: team.pokemon3_id,
