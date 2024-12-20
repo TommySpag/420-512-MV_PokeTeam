@@ -1,11 +1,11 @@
 import { Image, Text, View, TextInput, TouchableOpacity, Modal, FlatList, Dimensions, ScrollView } from 'react-native'
 import OverlayMessage from '../../components/OverlayMessage'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useTheme } from '../../contexts/ThemeContext'
 import { colorsPalette } from '../../assets/colorsPalette'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { fetchProfileData, setToken, updateProfileData, deleteUserById, getPokemonInfoByName, updateTeamData, uploadImageToGitHub } from '../../lib/axios'
-import { useGlobalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect, useGlobalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useLoading } from '../../contexts/loadingContext';
 import * as ImagePicker from 'expo-image-picker';
@@ -31,7 +31,7 @@ const profile = () => {
   const [motDePasse, setMotDePasse] = useState('*****');
   const [pokemonData, setPokemonData] = useState([]);
   const [selectedPokemonIndex, setSelectedPokemonIndex] = useState(null);
-
+  const [profileData, setProfileData] = useState([])
   //use pokedate pour display les pokemon (map) pokedata[0] = premier (pokemon pokemonData[0].pokename.sprite)
 
   //States
@@ -45,43 +45,42 @@ const profile = () => {
 
   //Lam
   //Retrieves data from database about the user
-  useEffect(() => {
-    // Fetch profile data
-
-    const loadProfileData = async () => {
-      try {
-        setLoading(true);
-        const profileData = await fetchProfileData(glob.user);
-        if (!profileData) throw new Error('Failed fetching data -> no Data')
-        setUsername(profileData.username);
-        setEmail(profileData.email);
-        if (profileData.profilePic) {
-          setProfilePic(profileData.profilePic);
-        }
-        const tempList = [];
-        for (let i; i < 6; i++) {
-          let key = `pokemon${i}_id`
-          tempList.push(profileData[key])
-        }
-        // setPokeTeam(tempList);
-
-        setTeamRating(Math.round(profileData.team_grade/profileData.nbT_Rated));
-
-      } catch (error) {
-        console.log('Profile : Failed Loading profileData : ', error)
-        // route.push("/auth/signin")
+  const loadProfileData = async () => {
+    try {
+      setLoading(true);
+      setProfileData(await fetchProfileData(glob.user));
+      if (!profileData) throw new Error('Failed fetching data -> no Data')
+      setUsername(profileData.username);
+      setEmail(profileData.email);
+      if (profileData.profilePic) {
+        setProfilePic(profileData.profilePic);
       }
-      setLoading(false);
-    };
+      const tempList = [];
+      for (let i; i < 6; i++) {
+        let key = `pokemon${i}_id`
+        tempList.push(profileData[key])
+      }
+      // setPokeTeam(tempList);
 
-    loadProfileData();
+      setTeamRating(Math.round(profileData.team_grade / profileData.nbT_Rated));
 
-    setIsMounted(true);
+    } catch (error) {
+      console.log('Profile : Failed Loading profileData : ', error)
+      // route.push("/auth/signin")
+    }
+    setLoading(false);
+  };
 
-    return () => {
-      setIsMounted(false); // Clean up on unmount
-    };
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      loadProfileData();
+      setIsMounted(true);
+      return () => {
+        setIsMounted(false); 
+      };
+    }, [])
+  )
+
 
   //Function to retrieve the data of a pokemon from pokeApi
   const fetchPokemonDataByName = async (pokeName) => {
@@ -165,17 +164,17 @@ const profile = () => {
         const temp = updatedTeam[selectedPokemonIndex];
         updatedTeam[selectedPokemonIndex] = updatedTeam[index];
         updatedTeam[index] = temp;
-  
+
         setPokeTeam(updatedTeam);
         saveNewPokemonOrder(updatedTeam);
-  
+
         setSelectedPokemonIndex(null);
       }
     } else {
       route.push(`/nonUserBasePages/description`);
     }
   };
-  
+
   const Item = ({ item, index }) => (
     <View className="flex items-center justify-center w-30 mt-8">
       <TouchableOpacity
@@ -216,24 +215,24 @@ const profile = () => {
   const handleProfilePicPress = async () => {
     const hasPermission = await requestCameraPermission();
     if (!hasPermission) return;
-  
+
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.Images,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
     });
-  
+
     if (!result.canceled) {
       const fileUri = result.assets[0].uri;
       if (!fileUri.startsWith('file://')) {
         console.error('Invalid file URI:', fileUri);
         return;
       }
-  
+
       try {
         const uploadedImageUrl = await uploadImageToGitHub(fileUri, 'profile_pictures/myProfilePic.png');
-        setProfilePic(uploadedImageUrl); 
+        setProfilePic(uploadedImageUrl);
       } catch (error) {
         console.error('Failed to upload image:', error);
       }
