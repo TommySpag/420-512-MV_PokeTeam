@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Image, Text, View, Dimensions, ScrollView, Animated } from 'react-native';
+import { Image, Text, View, Dimensions, ScrollView, Animated,TouchableOpacity } from 'react-native';
 import { useLoading } from '../../contexts/loadingContext';
 import { getPokemonInfoByName, getPokemonDescriptionByName } from '../../lib/axios';
-import { useGlobalSearchParams } from 'expo-router';
+import { useGlobalSearchParams, useRouter } from 'expo-router';
 import { useTheme } from '../../contexts/ThemeContext';
 import { usePokemonTheme } from '../../contexts/pokemonContext';
 import { colorsPalette } from '../../assets/colorsPalette';
+
 
 // images imports
 import fire from '../../assets/images/loading/fire.bmp';
@@ -26,6 +27,7 @@ import poison from '../../assets/images/loading/poison.bmp';
 import psychc from '../../assets/images/loading/psychc.bmp';
 import rock from '../../assets/images/loading/rock.bmp';
 import steel from '../../assets/images/loading/steel.bmp';
+import { useGenerationsTheme } from '../../contexts/generationContext';
 
 const sprites = [
     { id: 'fire', sprite: fire },
@@ -60,7 +62,15 @@ const PokemonDetails = () => {
     const { setLoading } = useLoading();
     const [fadeAnimation] = useState(new Animated.Value(0));
     const [currentText, setCurrentText] = useState('');
-    const {pokemonName} = usePokemonTheme();
+    const { pokemonName } = usePokemonTheme();
+    const route = useRouter();
+    
+
+
+    const goToPokemons = () => {
+        route.push('/nonUserBasePages/generations');
+    }
+
 
     useEffect(() => {
         setLoading(true);
@@ -91,16 +101,16 @@ const PokemonDetails = () => {
     useEffect(() => {
         if (description) {
             let i = 0;
-            let animatedText = ''; 
+            let animatedText = '';
             const interval = setInterval(() => {
                 const char = description[i];
-                animatedText += char; 
-                setCurrentText(animatedText); 
+                animatedText += char;
+                setCurrentText(animatedText);
                 i++;
                 if (i >= description.length) {
-                    clearInterval(interval); 
+                    clearInterval(interval);
                 }
-            }, 50); 
+            }, 50);
         }
     }, [description]);
     if (!pokemon) {
@@ -137,7 +147,15 @@ const PokemonDetails = () => {
                 ))}
                 <Text className="text-xl font-semibold text-gray-700 mt-4">Descrition:</Text>
                 <Text className="mt-2 text-gray-700 text-lg italic">{currentText}</Text>
+
+                <TouchableOpacity
+                    className="flex-row items-center p-4 border-b border-gray-300"
+                    onPress={() => goToPokemons(pokemon)}
+                >
+                    <Text className="text-lg font-bold">go back</Text>
+                </TouchableOpacity>
             </View>
+
         </ScrollView>
     );
 };
