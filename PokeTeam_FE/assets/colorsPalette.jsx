@@ -10,7 +10,7 @@ export const colorsPalette = {
     alert: '#ba1313', //red alert
     lightText: 'white',//blanc
     lightAlert: '#db8f8f',//red pale
-    black:'white',//noir
+    black:'black',//noir
     // red: #db3445
     text2: '#ffdb4e', // jaune
     btnColor: '#FEC10C',
@@ -37,7 +37,7 @@ export const colorsPalette = {
     alert: '#ba1313',
     lightText: '',
     lightAlert: '#db8f8f',
-    black:"",
+    black:"white",
     text2: 'ff6500', // jaune
     btnColor: '#DF1818',
 
