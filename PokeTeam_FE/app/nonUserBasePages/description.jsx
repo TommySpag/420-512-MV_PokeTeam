@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, Text, View, Dimensions, ScrollView } from 'react-native';
+import { Image, Text, View, Dimensions, ScrollView, Animated } from 'react-native';
 import { useLoading } from '../../contexts/loadingContext';
 import { getPokemonInfoById, getPokemonInfoByName, getPokemonDescriptionByName } from '../../lib/axios';
 import { useGlobalSearchParams } from 'expo-router';
@@ -57,8 +57,11 @@ const PokemonDetails = () => {
     const [pokemon, setPokemon] = useState(null);
     const [description, setDescription] = useState(null);
     const { setLoading } = useLoading();
+    const [fadeAnimation] = useState(new Animated.Value(0));
+    const [currentText, setCurrentText] = useState('');
 
-    const pokeName = "gengar"; 
+
+    const pokeName = "charizard" //"charizard" "gengar" ; 
 
     useEffect(() => {
         setLoading(true);
@@ -78,6 +81,29 @@ const PokemonDetails = () => {
         loadPokemonData();
     }, [pokeName, setLoading]);
 
+    useEffect(() => {
+        Animated.timing(fadeAnimation, {
+            toValue: 1,
+            duration: 3000,
+            useNativeDriver: true,
+        }).start();
+    }, [fadeAnimation])
+
+    useEffect(() => {
+        if (description) {
+            let i = 0;
+            let animatedText = ''; 
+            const interval = setInterval(() => {
+                const char = description[i];
+                animatedText += char; 
+                setCurrentText(animatedText); 
+                i++;
+                if (i >= description.length) {
+                    clearInterval(interval); 
+                }
+            }, 50); 
+        }
+    }, [description]);
     if (!pokemon) {
         return <View><Text>Chargement des détails...</Text></View>;
     }
@@ -85,7 +111,7 @@ const PokemonDetails = () => {
     return (
         <ScrollView className="flex-1 bg-gray-100 p-4">
             <View className="flex-1 justify-center items-center bg-white rounded-lg shadow-lg p-4">
-                <Image style={{ width: 300, height: 300 }} source={{ uri: pokemon.sprite }} className="rounded-lg mx-auto mb-4" />
+                <Animated.Image style={{ width: 250, height: 300, opacity: fadeAnimation }} source={{ uri: pokemon.sprite }} className="rounded-lg mx-auto mb-4" />
                 <Text className="text-3xl font-semibold text-center text-gray-800 mb-2">{pokemon.name}</Text>
                 <Text className="text-xl text-gray-600 mb-1">Pokedex: <Text className="font-semibold">#{pokemon.id}</Text></Text>
                 <Text className="text-xl text-gray-600 mb-1">Weight: <Text className="font-semibold">{pokemon.weight} kg</Text></Text>
@@ -93,14 +119,12 @@ const PokemonDetails = () => {
                 <Text className="text-xl font-semibold text-gray-700 mt-4 mb-2">Types:</Text>
                 <View className="flex-row mb-4">
                     {pokemon.types.map((type) => {
-                        // Find the sprite for the type based on the `type.name` value
                         const typeSprite = sprites.find((sprite) => sprite.id === type.type.name)?.sprite;
-
                         return (
                             typeSprite ? (
                                 <Image
                                     key={type.type.name}
-                                    source={typeSprite}  // Use the imported sprite directly
+                                    source={typeSprite}
                                     style={{ width: 60, height: 25, marginRight: 10 }}
                                 />
                             ) : null
@@ -113,10 +137,11 @@ const PokemonDetails = () => {
                     <Text key={ability.ability.name} className="text-lg text-gray-500 ml-4">{ability.ability.name}</Text>
                 ))}
                 <Text className="text-xl font-semibold text-gray-700 mt-4">Descrition:</Text>
-                <Text className="mt-2 text-gray-700 text-lg italic">{description}</Text>
+                <Text className="mt-2 text-gray-700 text-lg italic">{currentText}</Text>
             </View>
         </ScrollView>
     );
 };
 
 export default PokemonDetails;
+
