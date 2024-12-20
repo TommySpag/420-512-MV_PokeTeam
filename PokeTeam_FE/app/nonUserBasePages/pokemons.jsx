@@ -13,7 +13,7 @@ const PokemonsByGeneration = () => {
   const { generation } = useGenerationsTheme();
   const { setPokemonName } = usePokemonTheme();
   const colors = colorsPalette[theme];
-  const router = useRouter();
+  const route = useRouter();
   const [pokemonsList, setPokemonsList] = useState([]);
 
   const { setLoading } = useLoading();
@@ -35,6 +35,7 @@ const PokemonsByGeneration = () => {
 
   const goToDescription = (pokeName) => {
     setPokemonName(pokeName);
+    route.push('/nonUserBasePages/description');
   };
 
   return (

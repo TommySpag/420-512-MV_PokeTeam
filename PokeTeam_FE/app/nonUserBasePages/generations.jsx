@@ -25,6 +25,7 @@ const generations = () => {
 
   const goToPokemons = (generation) => {
     setGeneration(generation);
+    route.push('/nonUserBasePages/pokemons');
 }
 
   useEffect(() => {
@@ -70,7 +71,7 @@ const generations = () => {
               key={i}
               className="my-3 py-4 px-8 rounded-lg items-center justify-center"
               style={{backgroundColor:colors.btnColor}}
-              onPress={goToPokemons(i + 1)}
+              onPress={() => goToPokemons(i + 1)}
             >
               <Text className="text-xl font-bold text-gray-800">Génération {i + 1}</Text>
               <View className="flex-row flex-wrap justify-center items-center mt-3">
