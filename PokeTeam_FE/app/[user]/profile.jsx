@@ -223,6 +223,7 @@ const profile = () => {
               disabled={!isEditing}
               style={isEditing ? { borderWidth: 4, borderColor: colors.lightAlert } : {}}
             >
+            
               <Image
                 style={{ width: 150, height: 150, borderRadius: 9999 }}
                 source={
