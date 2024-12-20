@@ -105,6 +105,33 @@ export async function addPokemonToPokeUserTeam(pokeID, userID, placement){
         return true
 }
 
-// removePokemonFromTeam
+export async function getAllPokeTeamsAndRatings(){
+    console.log(`Database : getting PokeTeams and Ratings`)
+    const [rows] = await pool.query(`Select 
+                                        id, 
+                                        pokemon1_id,
+                                        pokemon2_id, 
+                                        pokemon3_id, 
+                                        pokemon4_id, 
+                                        pokemon5_id, 
+                                        pokemon6_id,
+                                        team_grade,
+                                        nbT_Rated
+                                        from pokeUsers`)
+    return rows[0]
+}
 
+export async function updateTeamRating(userId,userData){
+    //DEBUG
+    console.log(`Database : update Rating with userData.id : ${userId}`)
+    //
+    const [rows] = await pool.query(`   UPDATE pokeUsers
+                                        SET 
+                                           team_grade = ?,
+                                           nbT_Rated = ?
+
+                                        WHERE id = ?;`,[userData.rating, userData.nbT_Rated, userId])
+    return true
+
+}
 

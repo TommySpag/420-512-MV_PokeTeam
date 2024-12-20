@@ -11,5 +11,6 @@ CREATE TABLE pokeUsers (
 	pokemon6_id INTEGER,
 	profilePic VARCHAR(100),
 	team_grade FLOAT,
+	nbT_Rated INTEGER,
 	PRIMARY KEY (id)
 );

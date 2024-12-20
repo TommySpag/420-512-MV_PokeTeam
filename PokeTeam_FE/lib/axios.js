@@ -284,3 +284,33 @@ export async function getPokemonDescriptionByName(pokeName) {
       return 'Failed to load description.';
     }
   }
+
+export async function getAllPokeTeamsAndRatings() {
+    try {
+        console.log('Trying to get all Teams and Ratings')
+        const response = await api.get('/pokeusers/TeamAndRatings');
+
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching Pokémon teams and ratings:', error.message);
+        throw new Error('Failed to fetch Pokémon teams and ratings.');
+    }
+}
+
+
+export async function updateTeamRating(userData){
+    try {
+        console.log(`Trying to updateTeamData with userData: ${userData}`);
+        const updateData = await api.put(`/pokeusers/modifyrating/:${userData.id}`,userData,{
+            header:{
+                Authorization: 'none',
+            },
+            
+        });
+        if(!(updateData.status == 200)) throw Error;
+        
+        return updateData.data
+    } catch (error){
+        throw new Error(error)
+    }
+} 
