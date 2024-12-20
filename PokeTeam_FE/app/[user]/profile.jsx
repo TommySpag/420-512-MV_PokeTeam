@@ -65,7 +65,7 @@ const profile = () => {
         }
         // setPokeTeam(tempList);
 
-        setTeamRating(Math.round(profileData.team_grade));
+        setTeamRating(Math.round(profileData.team_grade/profileData.nbT_Rated));
 
       } catch (error) {
         console.log('Profile : Failed Loading profileData : ', error)
