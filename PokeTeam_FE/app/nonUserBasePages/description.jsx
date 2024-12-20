@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Image, Text, View, Dimensions, ScrollView, Animated } from 'react-native';
 import { useLoading } from '../../contexts/loadingContext';
-import { getPokemonInfoById, getPokemonInfoByName, getPokemonDescriptionByName } from '../../lib/axios';
+import { getPokemonInfoByName, getPokemonDescriptionByName } from '../../lib/axios';
 import { useGlobalSearchParams } from 'expo-router';
 import { useTheme } from '../../contexts/ThemeContext';
 import { colorsPalette } from '../../assets/colorsPalette';
+import { useColorTypeTheme } from '../../contexts/colorTypeContext';
 
 // images imports
 import fire from '../../assets/images/loading/fire.bmp';
@@ -53,15 +54,18 @@ const PokemonDetails = () => {
 
     const { theme } = useTheme();
     const colors = colorsPalette[theme];
-    const glob = useGlobalSearchParams();
+    const { pokeName } = useGlobalSearchParams();
+    console.log(pokeName);
     const [pokemon, setPokemon] = useState(null);
     const [description, setDescription] = useState(null);
     const { setLoading } = useLoading();
     const [fadeAnimation] = useState(new Animated.Value(0));
     const [currentText, setCurrentText] = useState('');
+    const { type, setType } = useColorTypeTheme();
+    const typeColor = colorsPalette['type'].type;
 
 
-    const pokeName = "charizard" //"charizard" "gengar" ; 
+    //const pokeName = "1" //"charizard" "gengar" ; 
 
     useEffect(() => {
         setLoading(true);
@@ -70,6 +74,7 @@ const PokemonDetails = () => {
                 // Fetch Pokémon data
                 const data = await getPokemonInfoByName(pokeName);
                 const desc = await getPokemonDescriptionByName(pokeName);
+                
                 setPokemon(data);
                 setDescription(desc);
             } catch (error) {
