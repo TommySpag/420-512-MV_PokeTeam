@@ -305,43 +305,43 @@ app.put("/pokeusers/removepoke/:userid/:pokeid", async (req, res) => {
     }
 
     const user = await getPokeUserById(userId);
-        if (!user) {
-            return res.status(404).json({ error: `Error while updating data` });
-        }
+    if (!user) {
+        return res.status(404).json({ error: `Error while updating data` });
+    }
 
     try {
         const pokeTeam = {
-            pokemon1_id:"",
-            pokemon2_id:"",
-            pokemon3_id:"",
-            pokemon4_id:"",
-            pokemon5_id:"",
-            pokemon6_id:""
+            pokemon1_id: "",
+            pokemon2_id: "",
+            pokemon3_id: "",
+            pokemon4_id: "",
+            pokemon5_id: "",
+            pokemon6_id: ""
         }
         let list = []
 
-        
-        for(let i=1 ; i <= 6 ; i ++){ 
-            list[i-1] = user[`pokemon${i}_id`];
+
+        for (let i = 1; i <= 6; i++) {
+            list[i - 1] = user[`pokemon${i}_id`];
 
         }
 
         for (let ii = 0; ii <= 5; ii++) {
-            if(list[ii] == removedPokeId ){
+            if (list[ii] == removedPokeId) {
                 list.pop(list[ii])
                 break
             }
-            
+
         }
 
-        list+=""
+        list += ""
 
-        for(let iii=1 ; iii <= 6 ; iii ++){ 
-            pokeTeam[`pokemon${iii}_id`] = list[iii] ;
-            
+        for (let iii = 1; iii <= 6; iii++) {
+            pokeTeam[`pokemon${iii}_id`] = list[iii];
+
         }
 
-        const result = await updatePokeUserTeam(userId,pokeTeam)
+        const result = await updatePokeUserTeam(userId, pokeTeam)
         if (!result) {
             return res.status(500).json({ error: `Error executing query` });
         }
@@ -402,6 +402,57 @@ app.put("/pokeusers/modifypoke/:id", async (req, res) => {
         }
 
         // Return the information
+        res.status(200).json({
+            message: "Success"
+        });
+
+
+    } catch (error) {
+
+    }
+
+})
+
+app.get("/pokeusers/TeamAndRatings", async (req, res) => {
+    try {
+        const teamData = await getAllPokeTeamsAndRatings();
+
+        if (!teamData || teamData.length === 0) {
+            return res.status(404).json({ error: 'No teams or ratings found' });
+        }
+
+        // Return the information
+        res.status(200).json(teamData.map(team => ({
+            id: team.id,
+            pokemon1_id: team.pokemon1_id,
+            pokemon2_id: team.pokemon2_id,
+            pokemon3_id: team.pokemon3_id,
+            pokemon4_id: team.pokemon4_id,
+            pokemon5_id: team.pokemon5_id,
+            pokemon6_id: team.pokemon6_id,
+            rating: team.team_grade,
+            nbT_Rated: team.nbT_Rated
+        })));
+    } catch (error) {
+        if (error instanceof jwt.JsonWebTokenError) {
+            return res.status(401).send('Invalid token'); // Handle JWT-specific errors
+        }
+        console.error('Error fetching profile Data: ', error);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+app.put("/pokeusers/modifyrating/:id", async (req, res) => {
+    try {
+        
+        const userId = req.params.id;
+
+        const ratingData = req.body;
+
+        const result = await updateTeamRating(userId, ratingData)
+        if (!result) {
+            return res.status(500).json({ error: `Error executing query` });
+        }
+
         res.status(200).json({
             message: "Success"
         });
