@@ -157,28 +157,35 @@ const profile = () => {
   }
 
   const swapPokemon = (index) => {
-    if (!isEditing) return; // Prevent swapping if not in editing mode
+    if (isEditing) {
+      if (selectedPokemonIndex === null) {
+        setSelectedPokemonIndex(index);
+      } else {
+        let updatedTeam = [...pokeTeam];
+        const temp = updatedTeam[selectedPokemonIndex];
+        updatedTeam[selectedPokemonIndex] = updatedTeam[index];
+        updatedTeam[index] = temp;
   
-    if (selectedPokemonIndex === null) {
-      setSelectedPokemonIndex(index);
+        setPokeTeam(updatedTeam);
+        saveNewPokemonOrder(updatedTeam);
+  
+        setSelectedPokemonIndex(null);
+      }
     } else {
-      let updatedTeam = [...pokeTeam];
-      const temp = updatedTeam[selectedPokemonIndex];
-      updatedTeam[selectedPokemonIndex] = updatedTeam[index];
-      updatedTeam[index] = temp;
-  
-      setPokeTeam(updatedTeam);
-      saveNewPokemonOrder(updatedTeam);
-  
-      setSelectedPokemonIndex(null);
+      route.push(`/nonUserBasePages/description`);
     }
   };
   
   const Item = ({ item, index }) => (
     <View className="flex items-center justify-center w-30 mt-8">
       <TouchableOpacity
-        onPress={() => swapPokemon(index)}
-        disabled={!isEditing} // Disable when not editing
+        onPress={() => {
+          if (isEditing) {
+            swapPokemon(index);  // Swap the Pokémon if editing
+          } else {
+            route.push(`/nonUserBasePages/description`);  // Navigate to description page when not editing
+          }
+        }}
         className={`mx-2 py-4 px-2 rounded-lg items-center justify-center w-[100px] h-[120px] flex-shrink-0 flex-grow-0`}
         style={{ backgroundColor: colors.btnColor }}
       >

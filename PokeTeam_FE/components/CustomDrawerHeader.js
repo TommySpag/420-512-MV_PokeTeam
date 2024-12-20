@@ -1,6 +1,6 @@
 // CustomDrawerHeader.js
 import React from 'react';
-import {Text, StyleSheet,TouchableOpacity} from 'react-native';
+import {Text, StyleSheet,TouchableOpacity, Image, View } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colorsPalette } from '../assets/colorsPalette';
@@ -18,7 +18,9 @@ const CustomDrawerHeader = ({navigation, tabName}) => {
             <Icon name="bars" size={30} color={colors.text}/>
         </Text>
       </TouchableOpacity>
-      
+      <View style={styles.imageContainer}>
+        <Image style={styles.image} source={require('../assets/images/poketeamlogo.jpg')} />
+      </View>
       <Text style={[styles.title,{color:colors.text}]}>{tabName}</Text>
       <TouchableOpacity style={[styles.content]} onPress={() => {toggleTheme()}}>
         <Text>
@@ -46,6 +48,16 @@ const styles = StyleSheet.create({
     justifyContent:"center",
     alignItems:"center",
     fontSize:30
+  },
+  image: {
+    width: 150,
+    height: 75,
+    resizeMode: 'contain',
+  },
+  imageContainer:{
+    alignItems: 'center',
+    justifyContent:"center",
+    flex: 1
   }
 });
 
