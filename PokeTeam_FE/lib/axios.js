@@ -223,6 +223,25 @@ export async function getPokemonInfoByName(pokeName) {
     }
 }
 
+export async function getPokemonSpriteByName(pokeName) {
+    try {
+        console.log("Trying to getPokemonSpriteByName with name: " + pokeName);
+
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokeName}`);
+
+        if (!response.ok) {
+            throw new Error(`Error fetching data for ${pokeName}: ${response.status}`);
+        }
+
+        const pokemon = await response.json();
+        return pokemon.sprites.front_default;
+        
+    } catch (error) {
+        console.log(`Error in getPokemonSpriteByName: ${error.message}`);
+        return null; 
+    }
+}
+
 // done, works (❁´◡`❁) -raphee ☻
 export async function getNbGenerations(){
     try{
@@ -255,6 +274,25 @@ export async function getStartersForGeneration(generationId) {
     }
     } catch (error) {
         console.error(`Error in getStartersForGeneration: ${error.message}`);
+        return [];
+    }
+}
+
+export async function getPokemonsForGeneration(generationId) {
+    try {
+        console.log(`Trying to get pokemons for Generation ${generationId}`);
+
+        const response = await axios.get(`https://pokeapi.co/api/v2/generation/${generationId}/`);
+        
+        if (response.status !== 200) {
+            throw new Error('PokeAPI responded with an error');
+        }
+
+        const names = response.data.pokemon_species.map(pokemon => pokemon.name);
+        return names;
+    }
+    catch (error) {
+        console.error(`Error in getPokemonsForGeneration: ${error.message}`);
         return [];
     }
 }

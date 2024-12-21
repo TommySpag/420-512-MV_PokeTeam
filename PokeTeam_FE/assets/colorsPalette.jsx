@@ -10,7 +10,7 @@ export const colorsPalette = {
     alert: '#ba1313', //red alert
     lightText: 'white',//blanc
     lightAlert: '#db8f8f',//red pale
-    black:'white',//noir
+    black:'black',//noir
     // red: #db3445
     text2: '#ffdb4e', // jaune
     btnColor: '#FEC10C',
@@ -37,7 +37,7 @@ export const colorsPalette = {
     alert: '#ba1313',
     lightText: '',
     lightAlert: '#db8f8f',
-    black:"",
+    black:"white",
     text2: 'ff6500', // jaune
     btnColor: '#DF1818',
 
@@ -49,6 +49,28 @@ export const colorsPalette = {
       textShadowOffset: { width: 3, height: 3 }, // Décale l'ombre pour simuler un contour
       textShadowRadius: 3, // Fait en sorte que l'ombre soit un peu floue pour un effet plus doux
     },
+
+    type: {
+      normal: '#9D9F9D',
+      fighting: '#EE8535',
+      flying: '#8BB6E9',
+      poison: '#8547C2',
+      ground: '#87542F',
+      rock: '#ACA784',
+      bug: '#929F3A',
+      ghost: '#69456C',
+      steel: '#6E9DB3',
+      fire: '#D23F37',
+      water: '#457DE6',
+      grass: '#5B9D3F',
+      electric: '#F0C043',
+      psychic: '#DB5078',
+      ice: '#6FD3FA',
+      dragon: '#535FD8',
+      dark: '#4E4341',
+      fairy: '#DE76E8',
+      original: 'white',
+    }
 
   }  
   };
