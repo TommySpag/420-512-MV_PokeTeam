@@ -1,4 +1,4 @@
-import { Image, Text, View, ScrollView, FlatList, TouchableOpacity } from 'react-native';
+import { Image, Text, View, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useLoading } from '../../contexts/loadingContext';
@@ -39,17 +39,33 @@ const PokemonsByGeneration = () => {
   };
 
   return (
-    <ScrollView className="h-full pb-16" style={{ backgroundColor: colors.background_c1 }}>
-      {pokemonsList.map((pokemon, index) => (
-        <TouchableOpacity
-          key={index}
-          className="flex-row items-center p-4 border-b border-gray-300"
-          onPress={() => goToDescription(pokemon)}
-        >
-          <Text className="text-lg font-bold">{pokemon}</Text>
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
+    <>
+      <View className="h-full pb-16" style={{ backgroundColor: colors.background_c1 }}>
+            <View className="justify-center gap-8 p-5">
+              <Text className="flex-row">
+                {'Pokémons'.split('').map((letter, index) => (
+                  <View key={index}>
+                    <Text style={colors.letter}>{letter}</Text>
+                  </View>
+                ))}
+              </Text>
+            </View>
+            <ScrollView className="h-full pb-16" style={{ backgroundColor: colors.background_c1 }}>
+              {pokemonsList.map((pokemon, index) => (
+                <TouchableOpacity
+                  key={index}
+                  className="py-4 px-6 rounded-md border my-2 self-center w-3/4"
+                  style={{ backgroundColor: colors.primary, borderColor: colors.btnBorderAndTextColor}}
+                  onPress={() => goToDescription(pokemon)}
+                >
+                  <Text className="text-center text-2xl font-bold font-sans" style={{ color: colors.btnBorderAndTextColor }}>
+                    {pokemon}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+      </View>
+    </>
   );
 };
 
