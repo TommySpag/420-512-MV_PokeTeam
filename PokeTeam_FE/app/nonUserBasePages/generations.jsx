@@ -69,15 +69,15 @@ const generations = () => {
           newViews.push(
             <TouchableOpacity
               key={i}
-              className="my-3 py-4 px-8 rounded-lg items-center justify-center"
+              className="my-3 py-2 px-4 rounded-lg items-center justify-center m-4"
               style={{backgroundColor:colors.btnColor}}
               onPress={() => goToPokemons(i + 1)}
             >
-              <Text className="text-xl font-bold text-gray-800">Génération {i + 1}</Text>
-              <View className="flex-row flex-wrap justify-center items-center mt-3">
+              <Text className="text-xl font-bold text-gray-800" style={{color:colors.generationsText}}>Génération {i + 1}</Text>
+              <View className="flex-row flex-wrap justify-center items-center mt-2">
                 {startersData && startersData.map((pokemon, idx) => (
                   pokemon ? (
-                    <View key={idx} className="items-center mx-2 my-2">
+                    <View key={idx} className="items-center mx-1 my-1">
                       <Image source={{ uri: pokemon.sprite }} className="w-20 h-20 object-contain mb-2" />
                     </View>
                   ) : null

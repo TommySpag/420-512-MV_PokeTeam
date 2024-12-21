@@ -27,7 +27,6 @@ import poison from '../../assets/images/loading/poison.bmp';
 import psychc from '../../assets/images/loading/psychc.bmp';
 import rock from '../../assets/images/loading/rock.bmp';
 import steel from '../../assets/images/loading/steel.bmp';
-import { useGenerationsTheme } from '../../contexts/generationContext';
 
 const sprites = [
     { id: 'fire', sprite: fire },
@@ -127,21 +126,17 @@ const PokemonDetails = () => {
         return <View><Text>Chargement des détails...</Text></View>;
     }
 
-    //style={[{ backgroundColor: colors.background_c1 }]}
-    //style={[{ color: colors.black }]}
     return (
-        <ScrollView className="flex-1 bg-gray-100 p-4">
-            <View className="flex-1 justify-center items-center bg-white rounded-lg shadow-lg p-4" style={[{ backgroundColor: colors.background_c1 }]}>
-
-                <View className="rounded-lg shadow-lg w-3/4" style={[{ backgroundColor: colors.background }]} >
+        <ScrollView className="bg-gray-100 p-4" contentContainerStyle={{ alignItems: 'center', paddingBottom: 20 }} style={[{ backgroundColor: colors.background_c1 }]}>
+                <View className="rounded-lg shadow-lg mb-2 w-3/4 border" style={{ backgroundColor: colors.navBarBackground, borderColor: colors.btnBorderAndTextColor }} >
                     <View className="flex-1 justify-center items-center"><Animated.Image style={{ width: 250, height: 300, opacity: fadeAnimation }} source={{ uri: pokemon.sprite }} /></View>
-                    <Text style={[{ color: colors.black }]} className="text-3xl font-semibold text-center mb-2">{pokemon.name}</Text>
-                    <Text style={[{ color: colors.black }]} className="text-xl mb-2 text-center">Pokedex: <Text className="font-semibold">#{pokemon.id}</Text></Text>
-                    <Text style={[{ color: colors.black }]} className="text-xl mb-8 text-center">Weight: <Text className="font-semibold">{pokemon.weight} kg</Text></Text>
+                    <Text style={{ color: colors.descriptionText }} className="text-3xl font-bold font-sans text-center mb-2">{pokemon.name}</Text>
+                    <Text style={{ color: colors.descriptionText }} className="text-xl mb-2 text-center">Pokedex: <Text className="font-semibold">#{pokemon.id}</Text></Text>
+                    <Text style={{ color: colors.descriptionText }} className="text-xl mb-8 text-center">Weight: <Text className="font-semibold">{pokemon.weight} kg</Text></Text>
                 </View>
 
-                <View className="rounded-lg shadow-lg p-4 m-2 w-3/4" style={[{ backgroundColor: colors.background }]}>
-                    <Text style={[{ color: colors.black }]} className="text-xl font-semibold  mt-4 mb-2 text-center">Types:</Text>
+                <View className="rounded-lg shadow-lg p-4 m-2 w-3/4 border" style={{ backgroundColor: colors.navBarBackground, borderColor: colors.btnBorderAndTextColor }}>
+                    <Text style={{ color: colors.descriptionText }} className="text-xl font-semibold  mt-4 mb-2 text-center">Types:</Text>
                     <View className="flex-row mb-4 justify-center items-center">
                         {pokemon.types.map((type) => {
                             const typeSprite = sprites.find((sprite) => sprite.id === type.type.name)?.sprite;
@@ -158,26 +153,24 @@ const PokemonDetails = () => {
                     </View>
                 </View>
 
-                <View className="rounded-lg shadow-lg p-4 m-2 w-3/4" style={[{ backgroundColor: colors.background }]}>
-                    <Text style={[{ color: colors.black }]} className="text-xl font-semibold  mt-4 text-center">Abilities:</Text>
+                <View className="rounded-lg shadow-lg p-4 m-2 w-3/4 border" style={{backgroundColor: colors.navBarBackground, borderColor: colors.btnBorderAndTextColor }}>
+                    <Text style={{ color: colors.descriptionText }} className="text-xl font-semibold  mt-4 text-center">Abilities:</Text>
                     {pokemon.abilities.map((ability) => (
-                        <Text style={[{ color: colors.black }]} key={ability.ability.name} className="text-lg  ml-4 text-center">{ability.ability.name}</Text>
+                        <Text style={{ color: colors.descriptionText }} key={ability.ability.name} className="text-lg  ml-4 text-center">{ability.ability.name}</Text>
                     ))}
-                    <Text style={[{ color: colors.black }]} className="text-xl font-semibold mt-4 text-center">Descrition:</Text>
-                    <Text style={[{ color: colors.black }]} className="mt-2 text-lg italic text-center">{currentText}</Text>
+                    <Text style={{ color: colors.descriptionText }} className="text-xl font-semibold mt-4 text-center">Description:</Text>
+                    <Text style={{ color: colors.descriptionText }} className="mt-1 mb-4 text-lg italic text-center">{currentText}</Text>
                 </View>
 
                 <View>
                     <TouchableOpacity
-                        style={[{ backgroundColor: colors.background }]}
-                        className="rounded-lg shadow-lg p-4 m-2 flex-row items-center p-4 border-b border-gray-300"
+                        style={{ backgroundColor: colors.navBarBackground, borderColor: colors.btnBorderAndTextColor }}
+                        className="rounded-lg shadow-lg p-4 m-2 flex-row items-center p-4 border border-gray-300"
                         onPress={() => goToGenerations()}
                     >
-                        <Text style={[{ color: colors.black }]} className="text-lg font-bold">go back</Text>
+                        <Text style={{ color: colors.descriptionText }} className="text-lg font-bold">go back</Text>
                     </TouchableOpacity>
                 </View>
-            </View>
-
         </ScrollView>
     );
 };

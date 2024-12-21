@@ -16,7 +16,9 @@ export const colorsPalette = {
     btnBorderAndTextColor: '#ffdb4e',
     btnColor: '#FEC10C',
     navBarBackground: '#094582',
-    navBarIcons: '#ffdb4e',   
+    navBarIcons: '#ffdb4e',
+    generationsText: "#094582",
+    descriptionText: '#ffdb4e',
 
     letter: {
       color: '#FEC10C', // Couleur du texte (jaune)
@@ -45,7 +47,9 @@ export const colorsPalette = {
     btnBorderAndTextColor: 'black',
     btnColor: '#DF1818',
     navBarBackground: 'black',
-    navBarIcons: '#db3445',    
+    navBarIcons: '#db3445',
+    generationsText: "black",
+    descriptionText: 'white',
 
     letter: {
       color: '#DF1818', // Couleur du texte (jaune)
