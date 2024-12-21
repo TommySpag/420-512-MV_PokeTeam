@@ -148,7 +148,22 @@ export async function updateProfileAddPoke(userData){
     } catch (error){
         throw new Error(error)
     }
-} 
+}
+
+export async function deletePokemon(userId, pokeId) {
+    try{
+    console.log(`axios.js : delete poke: ${pokeId} from user with id : ${userId}`)
+    const deletePokemon = await api.delete(`/pokeusers/removepoke/${userId}/${pokeId}`);    
+    if(deletePokemon.status != 200){
+        throw new Error('axios.js : Failed to delete pokemon')
+    }
+    }catch (error){
+        console.log("Error deleting pokemon : ",error)
+        throw new Error(error)
+    }
+}
+ 
+
 export async function updateTeamData(userData){
     try {
         console.log(`Trying to updateTeamData with userData: ${userData}`);
@@ -198,6 +213,11 @@ export async function getPokemonByType(pokeType){
 }
 
 export async function getPokemonInfoByName(pokeName) {
+    if (pokeName === "") {
+        console.log("Invalid Pokémon name provided.");
+        return "";
+    }
+
     try {
         console.log("Trying to getPokemonInfoByName with name: " + pokeName);
 
@@ -219,6 +239,25 @@ export async function getPokemonInfoByName(pokeName) {
         };
     } catch (error) {
         console.log(`Error in getPokemonInfoByName: ${error.message}`);
+        return ""; 
+    }
+}
+
+export async function getPokemonSpriteByName(pokeName) {
+    try {
+        console.log("Trying to getPokemonSpriteByName with name: " + pokeName);
+
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokeName}`);
+
+        if (!response.ok) {
+            throw new Error(`Error fetching data for ${pokeName}: ${response.status}`);
+        }
+
+        const pokemon = await response.json();
+        return pokemon.sprites.front_default;
+        
+    } catch (error) {
+        console.log(`Error in getPokemonSpriteByName: ${error.message}`);
         return null; 
     }
 }
@@ -255,6 +294,25 @@ export async function getStartersForGeneration(generationId) {
     }
     } catch (error) {
         console.error(`Error in getStartersForGeneration: ${error.message}`);
+        return [];
+    }
+}
+
+export async function getPokemonsForGeneration(generationId) {
+    try {
+        console.log(`Trying to get pokemons for Generation ${generationId}`);
+
+        const response = await axios.get(`https://pokeapi.co/api/v2/generation/${generationId}/`);
+        
+        if (response.status !== 200) {
+            throw new Error('PokeAPI responded with an error');
+        }
+
+        const names = response.data.pokemon_species.map(pokemon => pokemon.name);
+        return names;
+    }
+    catch (error) {
+        console.error(`Error in getPokemonsForGeneration: ${error.message}`);
         return [];
     }
 }
@@ -313,4 +371,57 @@ export async function updateTeamRating(userData){
     } catch (error){
         throw new Error(error)
     }
-} 
+}
+
+
+const GITHUB_API = 'https://api.github.com';
+const GITHUB_REPO_OWNER = 'aliterallamb'; 
+const GITHUB_REPO_NAME = 'ReactAppImg'; 
+const GITHUB_TOKEN = 'enter generated key'; 
+
+
+export async function uploadImageToGitHub(fileUri, filePath) {
+    try {
+        console.log(`Uploading image to GitHub at path: ${filePath}`);
+
+        // Ensure the file URI is correct (should start with file://)
+        if (!fileUri.startsWith('file://')) {
+            throw new Error('Invalid file URI. Make sure it starts with "file://".');
+        }
+
+        // Read the image from the URI and convert it to base64
+        const base64Image = await getBase64(fileUri);
+
+        const response = await axios.put(
+            `${GITHUB_API}/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/contents/${filePath}`,
+            {
+                message: `Upload ${filePath}`,
+                content: base64Image,
+            },
+            {
+                headers: {
+                    Authorization: `token ${GITHUB_TOKEN}`,
+                },
+            }
+        );
+
+        console.log('Image uploaded successfully:', response.data.content.download_url);
+        return response.data.content.download_url;
+    } catch (error) {
+        console.error('Error uploading image to GitHub:', error.response?.data || error.message);
+        throw new Error('Failed to upload image to GitHub.');
+    }
+}
+
+const getBase64 = async (fileUri) => {
+    try {
+        console.log(`Reading file from URI: ${fileUri}`);
+        const base64Image = await FileSystem.readAsStringAsync(fileUri, {
+            encoding: FileSystem.EncodingType.Base64,
+        });
+        return base64Image;
+    } catch (error) {
+        console.error('Error reading file:', error);
+        throw new Error('Failed to read image file.');
+    }
+};

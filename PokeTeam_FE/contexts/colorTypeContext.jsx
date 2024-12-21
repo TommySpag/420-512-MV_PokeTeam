@@ -11,4 +11,4 @@ export const ColorTypeProvider = ({ children }) => {
   );
 };
 
-export const useTheme = () => useContext(ColorTypeContext);
+export const useColorTypeTheme = () => useContext(ColorTypeContext);

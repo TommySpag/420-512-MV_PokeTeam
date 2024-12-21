@@ -2,6 +2,9 @@ import React from 'react'
 import { Drawer } from 'expo-router/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ThemeProvider } from '../contexts/ThemeContext';
+import { ColorTypeProvider } from '../contexts/colorTypeContext';
+import { GenerationsProvider } from '../contexts/generationContext';
+import { PokemonProvider } from '../contexts/pokemonContext';
 import CustomDrawerHeader from '../components/CustomDrawerHeader';
 
 // Import your global CSS file
@@ -12,10 +15,16 @@ import GlobalLoading  from "../components/GlobalLoading";
 const RootLayout = () => {
   return (
     <ThemeProvider>
-      <LoadingProvider>
-        <GlobalLoading />
-        <Layout/>
-      </LoadingProvider>
+      <ColorTypeProvider>
+        <GenerationsProvider>
+          <PokemonProvider>
+            <LoadingProvider>
+              <GlobalLoading />
+              <Layout/>
+            </LoadingProvider>
+          </PokemonProvider>
+        </GenerationsProvider>
+      </ColorTypeProvider>
     </ThemeProvider>
   )
 }

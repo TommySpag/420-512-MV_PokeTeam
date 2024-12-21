@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Image, Text, View, Dimensions, ScrollView, Animated } from 'react-native';
+import { Image, Text, View, Dimensions, ScrollView, Animated, TouchableOpacity } from 'react-native';
 import { useLoading } from '../../contexts/loadingContext';
-import { getPokemonInfoById, getPokemonInfoByName, getPokemonDescriptionByName } from '../../lib/axios';
-import { useGlobalSearchParams } from 'expo-router';
+import { getPokemonInfoByName, getPokemonDescriptionByName, updateProfileAddPoke } from '../../lib/axios';
+import { useGlobalSearchParams, useRouter } from 'expo-router';
 import { useTheme } from '../../contexts/ThemeContext';
+import { usePokemonTheme } from '../../contexts/pokemonContext';
 import { colorsPalette } from '../../assets/colorsPalette';
+
 
 // images imports
 import fire from '../../assets/images/loading/fire.bmp';
@@ -59,17 +61,23 @@ const PokemonDetails = () => {
     const { setLoading } = useLoading();
     const [fadeAnimation] = useState(new Animated.Value(0));
     const [currentText, setCurrentText] = useState('');
+    const { pokemonName } = usePokemonTheme();
+    const route = useRouter();
 
 
-    const pokeName = "charizard" //"charizard" "gengar" ; 
+
+    const goToGenerations = () => {
+        route.push('/nonUserBasePages/generations');
+    }
+
 
     useEffect(() => {
         setLoading(true);
         const loadPokemonData = async () => {
             try {
                 // Fetch Pokémon data
-                const data = await getPokemonInfoByName(pokeName);
-                const desc = await getPokemonDescriptionByName(pokeName);
+                const data = await getPokemonInfoByName(pokemonName);
+                const desc = await getPokemonDescriptionByName(pokemonName);
                 setPokemon(data);
                 setDescription(desc);
             } catch (error) {
@@ -79,7 +87,7 @@ const PokemonDetails = () => {
             }
         };
         loadPokemonData();
-    }, [pokeName, setLoading]);
+    }, [pokemonName, setLoading]);
 
     useEffect(() => {
         Animated.timing(fadeAnimation, {
@@ -92,53 +100,77 @@ const PokemonDetails = () => {
     useEffect(() => {
         if (description) {
             let i = 0;
-            let animatedText = ''; 
+            let animatedText = '';
             const interval = setInterval(() => {
                 const char = description[i];
-                animatedText += char; 
-                setCurrentText(animatedText); 
+                animatedText += char;
+                setCurrentText(animatedText);
                 i++;
                 if (i >= description.length) {
-                    clearInterval(interval); 
+                    clearInterval(interval);
                 }
-            }, 50); 
+            }, 50);
         }
     }, [description]);
+
+    const handleAdd = async () => {
+        try {
+            const addPoke = await updateProfileAddPoke(glob.user);
+            console.log("Pokemon added successfully:", addPoke);
+        } catch (error) {
+            console.error("Error occurred while adding Pokémon:", error);
+        }
+    };
+
     if (!pokemon) {
         return <View><Text>Chargement des détails...</Text></View>;
     }
 
     return (
-        <ScrollView className="flex-1 bg-gray-100 p-4">
-            <View className="flex-1 justify-center items-center bg-white rounded-lg shadow-lg p-4">
-                <Animated.Image style={{ width: 250, height: 300, opacity: fadeAnimation }} source={{ uri: pokemon.sprite }} className="rounded-lg mx-auto mb-4" />
-                <Text className="text-3xl font-semibold text-center text-gray-800 mb-2">{pokemon.name}</Text>
-                <Text className="text-xl text-gray-600 mb-1">Pokedex: <Text className="font-semibold">#{pokemon.id}</Text></Text>
-                <Text className="text-xl text-gray-600 mb-1">Weight: <Text className="font-semibold">{pokemon.weight} kg</Text></Text>
-
-                <Text className="text-xl font-semibold text-gray-700 mt-4 mb-2">Types:</Text>
-                <View className="flex-row mb-4">
-                    {pokemon.types.map((type) => {
-                        const typeSprite = sprites.find((sprite) => sprite.id === type.type.name)?.sprite;
-                        return (
-                            typeSprite ? (
-                                <Image
-                                    key={type.type.name}
-                                    source={typeSprite}
-                                    style={{ width: 60, height: 25, marginRight: 10 }}
-                                />
-                            ) : null
-                        );
-                    })}
+        <ScrollView className="bg-gray-100 p-4" contentContainerStyle={{ alignItems: 'center', paddingBottom: 20 }} style={[{ backgroundColor: colors.background_c1 }]}>
+                <View className="rounded-lg shadow-lg mb-2 w-3/4 border" style={{ backgroundColor: colors.navBarBackground, borderColor: colors.btnBorderAndTextColor }} >
+                    <View className="flex-1 justify-center items-center"><Animated.Image style={{ width: 250, height: 300, opacity: fadeAnimation }} source={{ uri: pokemon.sprite }} /></View>
+                    <Text style={{ color: colors.descriptionText }} className="text-3xl font-bold font-sans text-center mb-2">{pokemon.name}</Text>
+                    <Text style={{ color: colors.descriptionText }} className="text-xl mb-2 text-center">Pokedex: <Text className="font-semibold">#{pokemon.id}</Text></Text>
+                    <Text style={{ color: colors.descriptionText }} className="text-xl mb-8 text-center">Weight: <Text className="font-semibold">{pokemon.weight} kg</Text></Text>
                 </View>
 
-                <Text className="text-xl font-semibold text-gray-700 mt-4">Abilities:</Text>
-                {pokemon.abilities.map((ability) => (
-                    <Text key={ability.ability.name} className="text-lg text-gray-500 ml-4">{ability.ability.name}</Text>
-                ))}
-                <Text className="text-xl font-semibold text-gray-700 mt-4">Descrition:</Text>
-                <Text className="mt-2 text-gray-700 text-lg italic">{currentText}</Text>
-            </View>
+                <View className="rounded-lg shadow-lg p-4 m-2 w-3/4 border" style={{ backgroundColor: colors.navBarBackground, borderColor: colors.btnBorderAndTextColor }}>
+                    <Text style={{ color: colors.descriptionText }} className="text-xl font-semibold  mt-4 mb-2 text-center">Types:</Text>
+                    <View className="flex-row mb-4 justify-center items-center">
+                        {pokemon.types.map((type) => {
+                            const typeSprite = sprites.find((sprite) => sprite.id === type.type.name)?.sprite;
+                            return (
+                                typeSprite ? (
+                                    <Image
+                                        key={type.type.name}
+                                        source={typeSprite}
+                                        style={{ width: 60, height: 25, marginRight: 10 }}
+                                    />
+                                ) : null
+                            );
+                        })}
+                    </View>
+                </View>
+
+                <View className="rounded-lg shadow-lg p-4 m-2 w-3/4 border" style={{backgroundColor: colors.navBarBackground, borderColor: colors.btnBorderAndTextColor }}>
+                    <Text style={{ color: colors.descriptionText }} className="text-xl font-semibold  mt-4 text-center">Abilities:</Text>
+                    {pokemon.abilities.map((ability) => (
+                        <Text style={{ color: colors.descriptionText }} key={ability.ability.name} className="text-lg  ml-4 text-center">{ability.ability.name}</Text>
+                    ))}
+                    <Text style={{ color: colors.descriptionText }} className="text-xl font-semibold mt-4 text-center">Description:</Text>
+                    <Text style={{ color: colors.descriptionText }} className="mt-1 mb-4 text-lg italic text-center">{currentText}</Text>
+                </View>
+
+                <View>
+                    <TouchableOpacity
+                        style={{ backgroundColor: colors.navBarBackground, borderColor: colors.btnBorderAndTextColor }}
+                        className="rounded-lg shadow-lg p-4 m-2 flex-row items-center p-4 border border-gray-300"
+                        onPress={() => goToGenerations()}
+                    >
+                        <Text style={{ color: colors.descriptionText }} className="text-lg font-bold">go back</Text>
+                    </TouchableOpacity>
+                </View>
         </ScrollView>
     );
 };

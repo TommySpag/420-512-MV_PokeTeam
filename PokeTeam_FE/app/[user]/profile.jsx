@@ -1,13 +1,15 @@
 import { Image, Text, View, TextInput, TouchableOpacity, Modal, FlatList, Dimensions, ScrollView } from 'react-native'
 import OverlayMessage from '../../components/OverlayMessage'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useTheme } from '../../contexts/ThemeContext'
 import { colorsPalette } from '../../assets/colorsPalette'
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { fetchProfileData, setToken, updateProfileData, deleteUserById, getPokemonInfoByName, updateTeamData } from '../../lib/axios'
-import { useGlobalSearchParams, useRouter } from 'expo-router';
+import { fetchProfileData, setToken, updateProfileData, deleteUserById, getPokemonInfoByName, updateTeamData, uploadImageToGitHub, deletePokemon } from '../../lib/axios'
+import { useFocusEffect, useGlobalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useLoading } from '../../contexts/loadingContext';
+import { useGenerationsTheme } from '../../contexts/generationContext';
+import { usePokemonTheme } from '../../contexts/pokemonContext';
 import * as ImagePicker from 'expo-image-picker';
 
 const WIDTH = Dimensions.get('window').width
@@ -20,6 +22,7 @@ const profile = () => {
   const glob = useGlobalSearchParams();
   const route = useRouter()
   const { setLoading } = useLoading();
+  const { setPokemonName } = usePokemonTheme();
 
   //Default Data
 
@@ -31,7 +34,7 @@ const profile = () => {
   const [motDePasse, setMotDePasse] = useState('*****');
   const [pokemonData, setPokemonData] = useState([]);
   const [selectedPokemonIndex, setSelectedPokemonIndex] = useState(null);
-
+  const [profileData, setProfileData] = useState([])
   //use pokedate pour display les pokemon (map) pokedata[0] = premier (pokemon pokemonData[0].pokename.sprite)
 
   //States
@@ -45,43 +48,42 @@ const profile = () => {
 
   //Lam
   //Retrieves data from database about the user
-  useEffect(() => {
-    // Fetch profile data
-
-    const loadProfileData = async () => {
-      try {
-        setLoading(true);
-        const profileData = await fetchProfileData(glob.user);
-        if (!profileData) throw new Error('Failed fetching data -> no Data')
-        setUsername(profileData.username);
-        setEmail(profileData.email);
-        if (profileData.profilePic) {
-          setProfilePic(profileData.profilePic);
-        }
-        const tempList = [];
-        for (let i; i < 6; i++) {
-          let key = `pokemon${i}_id`
-          tempList.push(profileData[key])
-        }
-        // setPokeTeam(tempList);
-
-        setTeamRating(Math.round(profileData.team_grade));
-
-      } catch (error) {
-        console.log('Profile : Failed Loading profileData : ', error)
-        route.push("/auth/signin")
+  const loadProfileData = async () => {
+    try {
+      setLoading(true);
+      setProfileData(await fetchProfileData(glob.user));
+      if (!profileData) throw new Error('Failed fetching data -> no Data')
+      setUsername(profileData.username);
+      setEmail(profileData.email);
+      if (profileData.profilePic) {
+        setProfilePic(profileData.profilePic);
       }
-      setLoading(false);
-    };
+      const tempList = [];
+      for (let i; i < 6; i++) {
+        let key = `pokemon${i}_id`
+        tempList.push(profileData[key])
+      }
+      // setPokeTeam(tempList);
 
-    loadProfileData();
+      setTeamRating(Math.round(profileData.team_grade / profileData.nbT_Rated));
 
-    setIsMounted(true);
+    } catch (error) {
+      console.log('Profile : Failed Loading profileData : ', error)
+      // route.push("/auth/signin")
+    }
+    setLoading(false);
+  };
 
-    return () => {
-      setIsMounted(false); // Clean up on unmount
-    };
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      loadProfileData();
+      setIsMounted(true);
+      return () => {
+        setIsMounted(false);
+      };
+    }, [])
+  )
+
 
   //Function to retrieve the data of a pokemon from pokeApi
   const fetchPokemonDataByName = async (pokeName) => {
@@ -153,35 +155,101 @@ const profile = () => {
     route.push('/')
   }
   const goToGens = () => {
-    route.push('./generations')
+    route.push('/nonUserBasePages/generations')
+  }
+
+  const goToPokemon = (pokeName) => {
+    setPokemonName(pokeName);
+    route.push('/nonUserBasePages/description')
   }
 
   const swapPokemon = (index) => {
-    if (selectedPokemonIndex === null) {
-      setSelectedPokemonIndex(index);
+    if (isEditing) {
+      if (selectedPokemonIndex === null) {
+        setSelectedPokemonIndex(index);
+      } else {
+        if (selectedPokemonIndex === index) {
+          setSelectedPokemonIndex(null); // Unselect if the same Pokémon is tapped
+          return;
+        }
+  
+        if (index < 0 || index >= pokeTeam.length || selectedPokemonIndex < 0 || selectedPokemonIndex >= pokeTeam.length) {
+          console.error("Invalid indices for swapping");
+          return;
+        }
+  
+        let updatedTeam = [...pokeTeam];
+        const temp = updatedTeam[selectedPokemonIndex];
+  
+        // If swapping with an empty slot, clear the ID
+        if (updatedTeam[index] === "") {
+          updatedTeam[selectedPokemonIndex] = "";
+        } else {
+          updatedTeam[selectedPokemonIndex] = updatedTeam[index];
+        }
+  
+        updatedTeam[index] = temp;
+  
+        setPokeTeam(updatedTeam);
+        saveNewPokemonOrder(updatedTeam);
+  
+        setSelectedPokemonIndex(null);
+      }
     } else {
-      let updatedTeam = [...pokeTeam];
-      const temp = updatedTeam[selectedPokemonIndex];
-      updatedTeam[selectedPokemonIndex] = updatedTeam[index];
-      updatedTeam[index] = temp;
-  
-      setPokeTeam(updatedTeam);
-
-      saveNewPokemonOrder(updatedTeam);
-  
-      setSelectedPokemonIndex(null);
+      route.push(`/nonUserBasePages/description`);
     }
   };
+
+  const handleDelete = async (userId, index) => {
+    if (index < 0 || index >= pokeTeam.length) {
+      console.error("Invalid index for deletion");
+      return;
+    }
+  
+    const pokeId = pokeTeam[index];
+    const updatedTeam = [...pokeTeam];
+    updatedTeam[index] = "";
+  
+    try {
+      await deletePokemon(userId, pokeId);
+
+      setPokeTeam(updatedTeam);
+  
+      console.log("Pokemon deleted successfully");
+    } catch (error) {
+      console.error("Error deleting Pokemon:", error);
+    }
+  };
+  
+
   const Item = ({ item, index }) => (
     <View className="flex items-center justify-center w-30 mt-8">
-      <TouchableOpacity 
-        onPress={() => swapPokemon(index)} 
-        className="mx-2 py-4 px-2 rounded-lg items-center justify-center bg-btnColor w-[100px] h-[120px] flex-shrink-0 flex-grow-0"
-        style={{backgroundColor:colors.btnColor}}
-      >
-        <Image source={{ uri: item.sprite }} className="w-12 h-12 object-contain" />
-        <Text className="text-center font-bold w-full text-center overflow-hidden">{item.name}</Text>
-      </TouchableOpacity>
+      {item === "" ? ( 
+        <TouchableOpacity
+          onPress={() => goToGens()} 
+          className={`mx-2 py-4 px-2 rounded-lg items-center justify-center w-[100px] h-[120px] flex-shrink-0 flex-grow-0`}
+          style={{ backgroundColor: colors.btnColor }}
+        >
+          <Text className="text-4xl font-bold text-center">+</Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          onPress={() => goToPokemon(item.name)} 
+          className={`mx-2 py-4 px-2 rounded-lg items-center justify-center w-[100px] h-[120px] flex-shrink-0 flex-grow-0`}
+          style={{ backgroundColor: colors.btnColor }}
+        >
+          <Image source={{ uri: item.sprite }} className="w-12 h-12 object-contain" />
+          <Text className="text-center font-bold w-full text-center overflow-hidden">{item.name}</Text>
+          {isEditing && (
+            <TouchableOpacity
+              onPress={() => handleDelete(glob.user, index)} 
+              className="absolute top-0 right-0 p-1 bg-red-500 rounded-full"
+            >
+              <Text className="text-white text-xs">X</Text>
+            </TouchableOpacity>
+          )}
+        </TouchableOpacity>
+      )}
     </View>
   );
 
@@ -192,6 +260,15 @@ const profile = () => {
     } catch (error) {
       console.error('Error updating Pokemon order:', error);
     }
+  };
+
+  const requestCameraPermission = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Camera access is required to upload profile pictures.');
+      return false;
+    }
+    return true;
   };
 
   const handleProfilePicPress = async () => {
@@ -206,11 +283,20 @@ const profile = () => {
     });
 
     if (!result.canceled) {
-      setProfilePic(result.assets[0].uri);
+      const fileUri = result.assets[0].uri;
+      if (!fileUri.startsWith('file://')) {
+        console.error('Invalid file URI:', fileUri);
+        return;
+      }
+
+      try {
+        const uploadedImageUrl = await uploadImageToGitHub(fileUri, 'profile_pictures/myProfilePic.png');
+        setProfilePic(uploadedImageUrl);
+      } catch (error) {
+        console.error('Failed to upload image:', error);
+      }
     }
   };
-
-
 
   return (
     <>
