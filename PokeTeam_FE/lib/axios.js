@@ -148,7 +148,22 @@ export async function updateProfileAddPoke(userData){
     } catch (error){
         throw new Error(error)
     }
-} 
+}
+
+export async function deletePokemon(userId, pokeId) {
+    try{
+    console.log(`axios.js : delete poke: ${pokeId} from user with id : ${userId}`)
+    const deletePokemon = await api.delete(`/pokeusers/removepoke/${userId}/${pokeId}`);    
+    if(deletePokemon.status != 200){
+        throw new Error('axios.js : Failed to delete pokemon')
+    }
+    }catch (error){
+        console.log("Error deleting pokemon : ",error)
+        throw new Error(error)
+    }
+}
+ 
+
 export async function updateTeamData(userData){
     try {
         console.log(`Trying to updateTeamData with userData: ${userData}`);

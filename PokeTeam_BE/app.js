@@ -288,7 +288,7 @@ app.put("/pokeusers/addpoke/:userid/:pokeid", async (req, res) => {
 });
 
 
-app.put("/pokeusers/removepoke/:userid/:pokeid", async (req, res) => {
+app.delete("/pokeusers/removepoke/:userid/:pokeid", async (req, res) => {
     const token = req.headers['authorization']?.split(' ')[1];
     if (!token) return res.status(403).send('Forbidden');
     const userId = req.params.userid;

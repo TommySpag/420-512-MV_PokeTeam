@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useTheme } from '../../contexts/ThemeContext'
 import { colorsPalette } from '../../assets/colorsPalette'
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { fetchProfileData, setToken, updateProfileData, deleteUserById, getPokemonInfoByName, updateTeamData, uploadImageToGitHub } from '../../lib/axios'
+import { fetchProfileData, setToken, updateProfileData, deleteUserById, getPokemonInfoByName, updateTeamData, uploadImageToGitHub, deletePokemon } from '../../lib/axios'
 import { useFocusEffect, useGlobalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useLoading } from '../../contexts/loadingContext';
@@ -199,15 +199,34 @@ const profile = () => {
       route.push(`/nonUserBasePages/description`);
     }
   };
-  const deletePokemon = (index) =>{
-    swapPokemon(index, '');
-  }
+
+  const handleDelete = async (userId, index) => {
+    if (index < 0 || index >= pokeTeam.length) {
+      console.error("Invalid index for deletion");
+      return;
+    }
+  
+    const pokeId = pokeTeam[index];
+    const updatedTeam = [...pokeTeam];
+    updatedTeam[index] = "";
+  
+    try {
+      await deletePokemon(userId, pokeId);
+
+      setPokeTeam(updatedTeam);
+  
+      console.log("Pokemon deleted successfully");
+    } catch (error) {
+      console.error("Error deleting Pokemon:", error);
+    }
+  };
+  
 
   const Item = ({ item, index }) => (
     <View className="flex items-center justify-center w-30 mt-8">
-      {item === "" ? (
+      {item === "" ? ( 
         <TouchableOpacity
-          onPress={() => goToGens()}
+          onPress={() => goToGens()} 
           className={`mx-2 py-4 px-2 rounded-lg items-center justify-center w-[100px] h-[120px] flex-shrink-0 flex-grow-0`}
           style={{ backgroundColor: colors.btnColor }}
         >
@@ -215,18 +234,20 @@ const profile = () => {
         </TouchableOpacity>
       ) : (
         <TouchableOpacity
-          onPress={() => {
-            if (isEditing) {
-              swapPokemon(index);
-            } else {
-              goToPokemon(item.name); 
-            }
-          }}
+          onPress={() => goToPokemon(item.name)} 
           className={`mx-2 py-4 px-2 rounded-lg items-center justify-center w-[100px] h-[120px] flex-shrink-0 flex-grow-0`}
           style={{ backgroundColor: colors.btnColor }}
         >
           <Image source={{ uri: item.sprite }} className="w-12 h-12 object-contain" />
           <Text className="text-center font-bold w-full text-center overflow-hidden">{item.name}</Text>
+          {isEditing && (
+            <TouchableOpacity
+              onPress={() => handleDelete(glob.user, index)} 
+              className="absolute top-0 right-0 p-1 bg-red-500 rounded-full"
+            >
+              <Text className="text-white text-xs">X</Text>
+            </TouchableOpacity>
+          )}
         </TouchableOpacity>
       )}
     </View>
