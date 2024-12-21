@@ -11,11 +11,11 @@ const CustomDrawerHeader = ({navigation, tabName}) => {
   const { theme, toggleTheme} = useTheme();
   const colors = colorsPalette[theme];
   return (
-    <SafeAreaView style={[styles.header,{backgroundColor:colors.background}]}>
+    <SafeAreaView style={[styles.header,{backgroundColor:colors.navBarBackground}]}>
         
         <TouchableOpacity style={[styles.content]} onPress={() => {navigation.openDrawer();}}>
         <Text>
-            <Icon name="bars" size={30} color={colors.text}/>
+            <Icon name="bars" size={30} color={colors.navBarIcons}/>
         </Text>
       </TouchableOpacity>
       <View style={styles.imageContainer}>
@@ -24,7 +24,7 @@ const CustomDrawerHeader = ({navigation, tabName}) => {
       <Text style={[styles.title,{color:colors.text}]}>{tabName}</Text>
       <TouchableOpacity style={[styles.content]} onPress={() => {toggleTheme()}}>
         <Text>
-            <Icon name={theme == 'light' ? "moon" : "sun"} size={30} color={colors.text}/>
+            <Icon name={theme == 'light' ? "moon" : "sun"} size={30} color={colors.navBarIcons}/>
         </Text>
       </TouchableOpacity>
     </SafeAreaView>
