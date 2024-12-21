@@ -67,7 +67,7 @@ const PokemonDetails = () => {
     
 
 
-    const goToPokemons = () => {
+    const goToGenerations = () => {
         route.push('/nonUserBasePages/generations');
     }
 
@@ -161,7 +161,7 @@ const PokemonDetails = () => {
                 <TouchableOpacity
                     style={[{ backgroundColor: colors.background }]}
                     className="rounded-lg shadow-lg p-4 m-2 flex-row items-center p-4 border-b border-gray-300"
-                    onPress={() => goToPokemons(pokemon)}
+                    onPress={() => goToGenerations()}
                 >
                     <Text style={[{ color: colors.black }]} className="text-lg font-bold">go back</Text>
                 </TouchableOpacity>

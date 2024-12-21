@@ -198,6 +198,11 @@ export async function getPokemonByType(pokeType){
 }
 
 export async function getPokemonInfoByName(pokeName) {
+    if (pokeName === "") {
+        console.log("Invalid Pokémon name provided.");
+        return "";
+    }
+
     try {
         console.log("Trying to getPokemonInfoByName with name: " + pokeName);
 
@@ -219,7 +224,7 @@ export async function getPokemonInfoByName(pokeName) {
         };
     } catch (error) {
         console.log(`Error in getPokemonInfoByName: ${error.message}`);
-        return null; 
+        return ""; 
     }
 }
 

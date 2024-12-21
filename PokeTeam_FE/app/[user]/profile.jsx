@@ -8,6 +8,8 @@ import { fetchProfileData, setToken, updateProfileData, deleteUserById, getPokem
 import { useFocusEffect, useGlobalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useLoading } from '../../contexts/loadingContext';
+import { useGenerationsTheme } from '../../contexts/generationContext';
+import { usePokemonTheme } from '../../contexts/pokemonContext';
 import * as ImagePicker from 'expo-image-picker';
 
 const WIDTH = Dimensions.get('window').width
@@ -20,6 +22,7 @@ const profile = () => {
   const glob = useGlobalSearchParams();
   const route = useRouter()
   const { setLoading } = useLoading();
+  const { setPokemonName } = usePokemonTheme();
 
   //Default Data
 
@@ -76,7 +79,7 @@ const profile = () => {
       loadProfileData();
       setIsMounted(true);
       return () => {
-        setIsMounted(false); 
+        setIsMounted(false);
       };
     }, [])
   )
@@ -152,7 +155,12 @@ const profile = () => {
     route.push('/')
   }
   const goToGens = () => {
-    route.push('./generations')
+    route.push('/nonUserBasePages/generations')
+  }
+
+  const goToPokemon = (pokeName) => {
+    setPokemonName(pokeName);
+    route.push('/nonUserBasePages/description')
   }
 
   const swapPokemon = (index) => {
@@ -160,37 +168,67 @@ const profile = () => {
       if (selectedPokemonIndex === null) {
         setSelectedPokemonIndex(index);
       } else {
+        if (selectedPokemonIndex === index) {
+          setSelectedPokemonIndex(null); // Unselect if the same Pokémon is tapped
+          return;
+        }
+  
+        if (index < 0 || index >= pokeTeam.length || selectedPokemonIndex < 0 || selectedPokemonIndex >= pokeTeam.length) {
+          console.error("Invalid indices for swapping");
+          return;
+        }
+  
         let updatedTeam = [...pokeTeam];
         const temp = updatedTeam[selectedPokemonIndex];
-        updatedTeam[selectedPokemonIndex] = updatedTeam[index];
+  
+        // If swapping with an empty slot, clear the ID
+        if (updatedTeam[index] === "") {
+          updatedTeam[selectedPokemonIndex] = "";
+        } else {
+          updatedTeam[selectedPokemonIndex] = updatedTeam[index];
+        }
+  
         updatedTeam[index] = temp;
-
+  
         setPokeTeam(updatedTeam);
         saveNewPokemonOrder(updatedTeam);
-
+  
         setSelectedPokemonIndex(null);
       }
     } else {
       route.push(`/nonUserBasePages/description`);
     }
   };
+  const deletePokemon = (index) =>{
+    swapPokemon(index, '');
+  }
 
   const Item = ({ item, index }) => (
     <View className="flex items-center justify-center w-30 mt-8">
-      <TouchableOpacity
-        onPress={() => {
-          if (isEditing) {
-            swapPokemon(index);  // Swap the Pokémon if editing
-          } else {
-            route.push(`/nonUserBasePages/description`);  // Navigate to description page when not editing
-          }
-        }}
-        className={`mx-2 py-4 px-2 rounded-lg items-center justify-center w-[100px] h-[120px] flex-shrink-0 flex-grow-0`}
-        style={{ backgroundColor: colors.btnColor }}
-      >
-        <Image source={{ uri: item.sprite }} className="w-12 h-12 object-contain" />
-        <Text className="text-center font-bold w-full text-center overflow-hidden">{item.name}</Text>
-      </TouchableOpacity>
+      {item === "" ? (
+        <TouchableOpacity
+          onPress={() => goToGens()}
+          className={`mx-2 py-4 px-2 rounded-lg items-center justify-center w-[100px] h-[120px] flex-shrink-0 flex-grow-0`}
+          style={{ backgroundColor: colors.btnColor }}
+        >
+          <Text className="text-4xl font-bold text-center">+</Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          onPress={() => {
+            if (isEditing) {
+              swapPokemon(index);
+            } else {
+              goToPokemon(item.name); 
+            }
+          }}
+          className={`mx-2 py-4 px-2 rounded-lg items-center justify-center w-[100px] h-[120px] flex-shrink-0 flex-grow-0`}
+          style={{ backgroundColor: colors.btnColor }}
+        >
+          <Image source={{ uri: item.sprite }} className="w-12 h-12 object-contain" />
+          <Text className="text-center font-bold w-full text-center overflow-hidden">{item.name}</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 
