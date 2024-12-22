@@ -399,7 +399,6 @@ app.get("/pokeusers/TeamAndRatings/:id", async (req, res) => {
             return res.status(409).json({ error: "Forbidden: you are not allowed to get this info" });
         }
         const teamData = await getAllPokeTeamsAndRatings();
-        console.log(teamData)
 
         if (!teamData || teamData.length === 0) {
             return res.status(404).json({ error: 'No teams or ratings found' });
