@@ -149,7 +149,16 @@ app.get("/pokeusers/:id", async (req, res) => {
             id: user.id,
             username: user.username,
             email: user.email,
-            profilePic: user.profilePic
+            profilePic: user.profilePic,
+            pokemon1_id: user.pokemon1_id,
+            pokemon2_id: user.pokemon2_id,
+            pokemon3_id: user.pokemon3_id,
+            pokemon4_id: user.pokemon4_id,
+            pokemon5_id: user.pokemon5_id,
+            pokemon6_id: user.pokemon6_id,
+            team_grade: user.team_grade,
+            nbT_Rated: user.nbT_Rated
+
         });
     } catch (error) {
         if (error instanceof jwt.JsonWebTokenError) {
@@ -294,64 +303,51 @@ app.delete("/pokeusers/removepoke/:userid/:pokeid", async (req, res) => {
     const userId = req.params.userid;
     const removedPokeId = req.params.pokeid;
 
-    // Verify the token
-    const decoded = jwt.verify(token, SECRET_KEY); // Synchronous verification
-    if (!decoded?.userId) {
+    let decoded;
+    try {
+        decoded = jwt.verify(token, SECRET_KEY);
+    } catch (err) {
         return res.status(401).json({ error: "Forbidden: badToken" });
     }
 
-    if (decoded.userId != userId) {
-        return res.status(409).json({ error: "Forbidden: you are not allowed to get this info" });
+    if (!decoded?.userId || decoded.userId != userId) {
+        return res.status(409).json({ error: "Forbidden: you are not allowed to modify this data" });
     }
 
     const user = await getPokeUserById(userId);
     if (!user) {
-        return res.status(404).json({ error: `Error while updating data` });
+        return res.status(404).json({ error: `User not found` });
     }
 
     try {
         const pokeTeam = {
-            pokemon1_id: "",
-            pokemon2_id: "",
-            pokemon3_id: "",
-            pokemon4_id: "",
-            pokemon5_id: "",
-            pokemon6_id: ""
-        }
-        let list = []
+            pokemon1_id: user.pokemon1_id,
+            pokemon2_id: user.pokemon2_id,
+            pokemon3_id: user.pokemon3_id,
+            pokemon4_id: user.pokemon4_id,
+            pokemon5_id: user.pokemon5_id,
+            pokemon6_id: user.pokemon6_id
+        };
 
+        const pokeIds = Object.values(pokeTeam);
+        const updatedPokeIds = pokeIds.filter(pokeId => pokeId !== removedPokeId);
 
-        for (let i = 1; i <= 6; i++) {
-            list[i - 1] = user[`pokemon${i}_id`];
-
-        }
-
-        for (let ii = 0; ii <= 5; ii++) {
-            if (list[ii] == removedPokeId) {
-                list.pop(list[ii])
-                break
-            }
-
+        while (updatedPokeIds.length < 6) {
+            updatedPokeIds.push("");
         }
 
-        list += ""
-
-        for (let iii = 1; iii <= 6; iii++) {
-            pokeTeam[`pokemon${iii}_id`] = list[iii];
-
+        for (let i = 0; i < 6; i++) {
+            pokeTeam[`pokemon${i + 1}_id`] = updatedPokeIds[i];
         }
 
-        const result = await updatePokeUserTeam(userId, pokeTeam)
+        const result = await updatePokeUserTeam(userId, pokeTeam);
         if (!result) {
-            return res.status(500).json({ error: `Error executing query` });
+            return res.status(500).json({ error: `Error updating user team` });
         }
 
-        // Return the information
-        res.status(200).json({
-            message: "Success"
-        });
+        res.status(200).json({ message: "Success" });
     } catch (error) {
-        console.error('Error updating profile Data: ', error);
+        console.error('Error updating profile data: ', error);
         res.status(500).json({ error: 'Internal server error.' });
     }
 });
