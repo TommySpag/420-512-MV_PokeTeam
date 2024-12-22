@@ -74,15 +74,15 @@ const profile = () => {
     setLoading(false);
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      loadProfileData();
-      setIsMounted(true);
-      return () => {
-        setIsMounted(false);
-      };
-    }, [])
-  )
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     loadProfileData();
+  //     setIsMounted(true);
+  //     return () => {
+  //       setIsMounted(false);
+  //     };
+  //   }, [])
+  // )
 
 
   //Function to retrieve the data of a pokemon from pokeApi
@@ -360,10 +360,10 @@ const profile = () => {
                 :
                 <TextInput
                   className="justify-center z-0 py-5 rounded-lg text-center w-full"
-                  style={[{ color: colors.text, backgroundColor: colors.background }]}
+                  style={[{ color: colors.text2, backgroundColor: colors.background }]}
                   onChangeText={(item) => { setMotDePasse(item) }}
                   placeholder="Entrez l'identifiant"
-                  placeholderTextColor={colors.secondary}
+                  placeholderTextColor={colors.text2}
                   value={email}
                 />
               }

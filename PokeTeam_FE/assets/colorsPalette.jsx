@@ -25,10 +25,9 @@ export const colorsPalette = {
       fontSize: 32, // Taille de la police
       fontWeight: 'bold', // Poids de la police
       textShadowColor: '#2D4596', // Couleur du contour
-      textShadowOffset: { width: 3, height: 3 }, // Décale l'ombre pour simuler un contour
-      textShadowRadius: 3, // Fait en sorte que l'ombre soit un peu floue pour un effet plus doux
+      textShadowOffset: { width: 4, height: 4 }, // Décale l'ombre pour simuler un contour
+      textShadowRadius: 2, // Fait en sorte que l'ombre soit un peu floue pour un effet plus doux
     },
-
 
 
   },
@@ -44,7 +43,7 @@ export const colorsPalette = {
     lightAlert: '#db8f8f',
     black:"white",
     text2: 'ff6500', // jaune
-    btnBorderAndTextColor: 'black',
+    btnBorderAndTextColor: '#db3445',
     btnColor: '#DF1818',
     navBarBackground: 'black',
     navBarIcons: '#db3445',
