@@ -300,12 +300,13 @@ app.put("/pokeusers/addpoke/:userid/:pokeid", async (req, res) => {
 app.delete("/pokeusers/removepoke/:userid/:pokeid", async (req, res) => {
     const token = req.headers['authorization']?.split(' ')[1];
     if (!token) return res.status(403).send('Forbidden');
+    
     const userId = req.params.userid;
-    const removedPokeId = req.params.pokeid;
+    const removedPokeId = parseInt(req.params.pokeid,10);
 
     let decoded;
     try {
-        decoded = jwt.verify(token, SECRET_KEY);
+        decoded = jwt.verify(token, SECRET_KEY); // Verify token
     } catch (err) {
         return res.status(401).json({ error: "Forbidden: badToken" });
     }
@@ -329,17 +330,26 @@ app.delete("/pokeusers/removepoke/:userid/:pokeid", async (req, res) => {
             pokemon6_id: user.pokemon6_id
         };
 
-        const pokeIds = Object.values(pokeTeam);
-        const updatedPokeIds = pokeIds.filter(pokeId => pokeId !== removedPokeId);
+        console.log('Initial pokeTeam:', pokeTeam);
 
-        while (updatedPokeIds.length < 6) {
-            updatedPokeIds.push("");
-        }
-
+        // Find the index of the Pokémon to remove and set it to an empty string
+        let updated = false;
         for (let i = 0; i < 6; i++) {
-            pokeTeam[`pokemon${i + 1}_id`] = updatedPokeIds[i];
+            if (pokeTeam[`pokemon${i + 1}_id`] === removedPokeId) {
+                console.log(`Removing Pokémon ID: ${removedPokeId} from slot pokemon${i + 1}_id`);
+                pokeTeam[`pokemon${i + 1}_id`] = null;
+                updated = true;
+                break;
+            }
         }
 
+        if (!updated) {
+            return res.status(404).json({ error: "Pokémon not found in team" });
+        }
+
+        console.log('Updated pokeTeam:', pokeTeam);
+
+        // Update the team with the new pokeTeam object
         const result = await updatePokeUserTeam(userId, pokeTeam);
         if (!result) {
             return res.status(500).json({ error: `Error updating user team` });
@@ -351,6 +361,7 @@ app.delete("/pokeusers/removepoke/:userid/:pokeid", async (req, res) => {
         res.status(500).json({ error: 'Internal server error.' });
     }
 });
+
 
 
 app.post("/pokeusers/authenticate", async (req, res) => {
