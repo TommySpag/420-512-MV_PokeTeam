@@ -133,22 +133,19 @@ export async function deleteUserById(id){
         throw new Error(error)
     }
 }
-export async function updateProfileAddPoke(userData){
+export async function updateProfileAddPoke(userId, pokeId) {
     try {
-        console.log(`Trying to updateProfileAddPoke with userData: ${userData}`);
-        const updateData = await api.put(`/pokeusers/addpoke/:${userData.id}/:${userData.pokeid}`,userData,{
-            header:{
-                Authorization: 'none',
-            },
-            
-        });
-        if(!(updateData.status == 200)) throw Error;
-        
-        return updateData.data
-    } catch (error){
-        throw new Error(error)
+      console.log(`Trying to updateProfileAddPoke with userId: ${userId} and pokeId: ${pokeId}`);
+      const updateData = await axios.put(`/pokeusers/addpoke/${userId}/${pokeId}`);
+  
+      if (updateData.status !== 200) throw new Error('Failed to add Pokémon.');
+  
+      return updateData.data;
+    } catch (error) {
+      console.error('Error occurred while adding Pokémon:', error);
+      throw new Error(error);
     }
-}
+  }
 
 export async function deletePokemon(userId, pokeId) {
     try{
@@ -167,7 +164,7 @@ export async function deletePokemon(userId, pokeId) {
 export async function updateTeamData(userData){
     try {
         console.log(`Trying to updateTeamData with userData: ${userData}`);
-        const updateData = await api.put(`/pokeusers/modifypoke/:${userData.id}`,userData,{
+        const updateData = await api.put(`/pokeusers/modifypoke/${userData.userId}`,userData,{
             header:{
                 Authorization: 'none',
             },

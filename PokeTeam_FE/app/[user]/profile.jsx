@@ -29,7 +29,7 @@ const profile = () => {
   const [username, setUsername] = useState("Default")
   const [email, setEmail] = useState('Default@abc.ca')
   const [profilePic, setProfilePic] = useState('');
-  const [pokeTeam, setPokeTeam] = useState([25, 3, 6, 9, 143, 131]);
+  const [pokeTeam, setPokeTeam] = useState([]);
   const [teamRating, setTeamRating] = useState(0);
   const [motDePasse, setMotDePasse] = useState('*****');
   const [pokemonData, setPokemonData] = useState([]);
@@ -55,14 +55,17 @@ const profile = () => {
       const fetchedData = await fetchProfileData(glob.user);
       if (!fetchedData) throw new Error('Failed fetching data -> no Data');
 
-      setUsername(fetchedData.username || "Default");
-      setEmail(fetchedData.email || "Default@abc.ca");
+      setUsername(fetchedData.username);
+      setEmail(fetchedData.email);
       setProfilePic(fetchedData.profilePic || '');
+
+      console.log("this is the data: "+ fetchedData.pokemon1_id)
   
       const tempList = [];
       for (let i = 1; i <= 6; i++) {
         const key = `pokemon${i}_id`;
         tempList.push(fetchedData[key] || "");
+        console.log("this is the pokemon: " + fetchedData[key]);
       }
       setPokeTeam(tempList);
   
@@ -76,6 +79,7 @@ const profile = () => {
       console.log('Profile: Failed loading profile data:', error);
       route.push("/auth/signin")
     } finally {
+      console.log("this is the team: " + pokeTeam);
       setLoading(false);
     }
   };
@@ -175,7 +179,7 @@ const profile = () => {
         setSelectedPokemonIndex(index);
       } else {
         if (selectedPokemonIndex === index) {
-          setSelectedPokemonIndex(null); // Unselect if the same Pokémon is tapped
+          setSelectedPokemonIndex(null);
           return;
         }
   
@@ -186,18 +190,21 @@ const profile = () => {
   
         let updatedTeam = [...pokeTeam];
         const temp = updatedTeam[selectedPokemonIndex];
-  
-        // If swapping with an empty slot, clear the ID
-        if (updatedTeam[index] === "") {
-          updatedTeam[selectedPokemonIndex] = "";
-        } else {
-          updatedTeam[selectedPokemonIndex] = updatedTeam[index];
-        }
-  
+
+        updatedTeam[selectedPokemonIndex] = updatedTeam[index];
         updatedTeam[index] = temp;
   
         setPokeTeam(updatedTeam);
-        saveNewPokemonOrder(updatedTeam);
+
+        const teamJson = updatedTeam.reduce(
+          (acc, pokeId, idx) => {
+            acc[`pokemon${idx + 1}_id`] = pokeId || null;
+            return acc;
+          },
+          { userId: glob.user }
+        );
+  
+        saveNewPokemonOrder(teamJson);
   
         setSelectedPokemonIndex(null);
       }
@@ -205,6 +212,47 @@ const profile = () => {
       route.push(`/nonUserBasePages/description`);
     }
   };
+  
+  const saveNewPokemonOrder = async (newOrder) => {
+    try {
+      await updateTeamData(newOrder);
+      console.log('Pokemon order updated successfully');
+    } catch (error) {
+      console.error('Error updating Pokemon order:', error);
+    }
+  };
+  
+
+  const Item = ({ item, index }) => (
+    <View className="flex items-center justify-center w-30 mt-8">
+      {item === "" ? ( 
+        <TouchableOpacity
+          onPress={() => goToGens()} 
+          className={`mx-2 py-4 px-2 rounded-lg items-center justify-center w-[100px] h-[120px] flex-shrink-0 flex-grow-0`}
+          style={{ backgroundColor: colors.btnColor }}
+        >
+          <Text className="text-4xl font-bold text-center">+</Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          onPress={() => (isEditing ? swapPokemon(index) : goToPokemon(item.name))} 
+          className={`mx-2 py-4 px-2 rounded-lg items-center justify-center w-[100px] h-[120px] flex-shrink-0 flex-grow-0`}
+          style={{ backgroundColor: colors.btnColor }}
+        >
+          <Image source={{ uri: item.sprite }} className="w-12 h-12 object-contain" />
+          <Text className="text-center font-bold w-full text-center overflow-hidden">{item.name}</Text>
+          {isEditing && (
+            <TouchableOpacity
+              onPress={() => handleDelete(glob.user, index)} 
+              className="absolute top-0 right-0 p-1 bg-red-500 rounded-full"
+            >
+              <Text className="text-white text-xs">X</Text>
+            </TouchableOpacity>
+          )}
+        </TouchableOpacity>
+      )}
+    </View>
+  );
 
   const handleDelete = async (userId, index) => {
     if (index < 0 || index >= pokeTeam.length) {
@@ -224,47 +272,6 @@ const profile = () => {
       console.log("Pokemon deleted successfully");
     } catch (error) {
       console.error("Error deleting Pokemon:", error);
-    }
-  };
-  
-
-  const Item = ({ item, index }) => (
-    <View className="flex items-center justify-center w-30 mt-8">
-      {item === "" ? ( 
-        <TouchableOpacity
-          onPress={() => goToGens()} 
-          className={`mx-2 py-4 px-2 rounded-lg items-center justify-center w-[100px] h-[120px] flex-shrink-0 flex-grow-0`}
-          style={{ backgroundColor: colors.btnColor }}
-        >
-          <Text className="text-4xl font-bold text-center">+</Text>
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity
-          onPress={() => goToPokemon(item.name)} 
-          className={`mx-2 py-4 px-2 rounded-lg items-center justify-center w-[100px] h-[120px] flex-shrink-0 flex-grow-0`}
-          style={{ backgroundColor: colors.btnColor }}
-        >
-          <Image source={{ uri: item.sprite }} className="w-12 h-12 object-contain" />
-          <Text className="text-center font-bold w-full text-center overflow-hidden">{item.name}</Text>
-          {isEditing && (
-            <TouchableOpacity
-              onPress={() => handleDelete(glob.user, index)} 
-              className="absolute top-0 right-0 p-1 bg-red-500 rounded-full"
-            >
-              <Text className="text-white text-xs">X</Text>
-            </TouchableOpacity>
-          )}
-        </TouchableOpacity>
-      )}
-    </View>
-  );
-
-  const saveNewPokemonOrder = async (newOrder) => {
-    try {
-      await updateTeamData(newOrder);
-      console.log('Pokemon order updated successfully');
-    } catch (error) {
-      console.error('Error updating Pokemon order:', error);
     }
   };
 
