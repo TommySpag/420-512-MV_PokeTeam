@@ -43,7 +43,7 @@ export const colorsPalette = {
     lightAlert: '#db8f8f',
     black:"white",
     text2: 'ff6500', // jaune
-    btnBorderAndTextColor: '#db3445',
+    btnBorderAndTextColor: 'black',
     btnColor: '#DF1818',
     navBarBackground: 'black',
     navBarIcons: '#db3445',

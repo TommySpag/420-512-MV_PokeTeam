@@ -41,9 +41,9 @@ const index = () => {
             
 
             <TouchableOpacity className={`rounded p-6`} style={{backgroundColor:colors.primary}} onPress={() => { router.push("./auth/signin")}}>
-                <Text className={`text-4xl`} style={{color:colors.text2}} >Sign-in</Text>
+                <Text className={`text-4xl`} style={{color:colors.text2}} >Sign in</Text>
             </TouchableOpacity>
-            <Text class="text-3xl font-bold underline" style={{color:colors.text}}>If you don't already have an account <Link style={{color:colors.link}} href="./auth/signup">Sign-up</Link></Text>
+            <Text className="font-bold" style={{color:colors.primary}}>If you don't already have an account <Link style={{color:colors.descriptionText}} className="underline" href="./auth/signup">Sign up</Link></Text>
         </View>
 
         

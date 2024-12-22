@@ -340,10 +340,15 @@ export async function getPokemonDescriptionByName(pokeName) {
     }
   }
 
-export async function getAllPokeTeamsAndRatings() {
+export async function getAllPokeTeamsAndRatings(userId) {
     try {
         console.log('Trying to get all Teams and Ratings')
-        const response = await api.get('/pokeusers/TeamAndRatings');
+        const response = await api.get(`/pokeusers/TeamAndRatings/${userId}`,{
+            header:{
+                Authorization: 'none',
+            },
+            
+        });
 
         return response.data;
     } catch (error) {

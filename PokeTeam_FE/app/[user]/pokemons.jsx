@@ -6,12 +6,13 @@ import { useGenerationsTheme } from '../../contexts/generationContext';
 import { usePokemonTheme } from '../../contexts/pokemonContext';
 import { colorsPalette } from '../../assets/colorsPalette';
 import { getPokemonsForGeneration} from '../../lib/axios';
-import { useRouter } from 'expo-router';
+import { useRouter, useGlobalSearchParams } from 'expo-router';
 
 const PokemonsByGeneration = () => {
   const { theme } = useTheme();
   const { generation } = useGenerationsTheme();
   const { setPokemonName } = usePokemonTheme();
+  const glob = useGlobalSearchParams();
   const colors = colorsPalette[theme];
   const route = useRouter();
   const [pokemonsList, setPokemonsList] = useState([]);
@@ -35,7 +36,11 @@ const PokemonsByGeneration = () => {
 
   const goToDescription = (pokeName) => {
     setPokemonName(pokeName);
-    route.push('/nonUserBasePages/description');
+    route.push(`/${glob.user}/description`);
+  };
+
+  const goToGenerations = () => {
+    route.push(`/${glob.user}/generations`);
   };
 
   return (
@@ -64,6 +69,13 @@ const PokemonsByGeneration = () => {
                 </TouchableOpacity>
               ))}
             </ScrollView>
+            <TouchableOpacity
+                  style={{ backgroundColor: colors.btnBorderAndTextColor, borderColor: colors.primary}}
+                  className="py-4 px-6 rounded-md border my-2 self-center w-3/4"
+                  onPress={goToGenerations}
+              >
+                  <Text className="text-center text-2xl font-bold font-sans" style={{ color: colors.primary }}>Go back</Text>
+            </TouchableOpacity>
       </View>
     </>
   );
