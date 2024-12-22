@@ -59,7 +59,7 @@ export async function signIn(usernameOrEmail, password){
         
         // Store the token on successful sign-in
         await setToken(userAuth.data.token);
-
+        console.log(userAuth.data.token)
         return userAuth.data
     } catch (error){
         throw new Error(error)
@@ -259,7 +259,6 @@ export async function getPokemonSpriteByName(pokeName) {
     }
 }
 
-// done, works (❁´◡`❁) -raphee ☻
 export async function getNbGenerations(){
     try{
         console.log("Trying to getAllGenerations");
@@ -272,7 +271,6 @@ export async function getNbGenerations(){
     }
 }
 
-//done by Lamb.
 export async function getStartersForGeneration(generationId) {
     try {
         console.log(`Trying to get starters for Generation ${generationId}`);

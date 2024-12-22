@@ -5,7 +5,7 @@ import { useLoading } from '../../contexts/loadingContext';
 import { colorsPalette } from '../../assets/colorsPalette';
 import { getPokemonInfoByName, getAllPokeTeamsAndRatings, updateTeamRating } from '../../lib/axios'; 
 import { Ionicons } from '@expo/vector-icons';
-import { useGlobalSearchParams } from "expo-router";
+import { useGlobalSearchParams, useFocusEffect } from "expo-router";
 
 const TeamsPage = () => {
     const { theme } = useTheme();
@@ -92,44 +92,47 @@ const TeamsPage = () => {
         }
     };
 
-    useEffect(() => {
-        const fetchTeams = async () => {
-            setLoading(true);
-            try {
-                // Try to fetch the teams and ratings from the backend
-                const teamsData = await getAllPokeTeamsAndRatings(glob.user);
-                setTeams(teamsData); // Set the teams in state
+    const fetchTeams = async () => {
+        setLoading(true);
+        try {
+            // Try to fetch the teams and ratings from the backend
+            const teamsData = await getAllPokeTeamsAndRatings(glob.user);
+            const validTeamsData = teamsData.filter(team => team.pokemon1_id !== null);
+            setTeams(validTeamsData); // Set the teams in state
 
-                // Fetch Pokémon data for the teams
-                const updatedPokemonData = [];
-                for (let team of teamsData) {
-                    const pokeIds = [
-                        team.pokemon1_id,
-                        team.pokemon2_id,
-                        team.pokemon3_id,
-                        team.pokemon4_id,
-                        team.pokemon5_id,
-                        team.pokemon6_id
-                    ];
-                    const teamPokemonData = await fetchPokemonData(pokeIds);
-                    updatedPokemonData.push({ teamId: team.id, data: teamPokemonData });
-                }
-
-                const newPokemonData = {};
-                updatedPokemonData.forEach((data) => {
-                    newPokemonData[data.teamId] = data.data;
-                });
-
-                setPokemonData(newPokemonData);
-            } catch (error) {
-                console.log('Error fetching teams or Pokémon data:', error);
-            } finally {
-                setLoading(false);
+            // Fetch Pokémon data for the teams
+            const updatedPokemonData = [];
+            for (let team of validTeamsData) {
+                const pokeIds = [
+                    team.pokemon1_id,
+                    team.pokemon2_id,
+                    team.pokemon3_id,
+                    team.pokemon4_id,
+                    team.pokemon5_id,
+                    team.pokemon6_id
+                ];
+                const teamPokemonData = await fetchPokemonData(pokeIds);
+                updatedPokemonData.push({ teamId: team.id, data: teamPokemonData });
             }
-        };
 
-        fetchTeams();
-    }, []);
+            const newPokemonData = {};
+            updatedPokemonData.forEach((data) => {
+                newPokemonData[data.teamId] = data.data;
+            });
+
+            setPokemonData(newPokemonData);
+        } catch (error) {
+            console.log('Error fetching teams or Pokémon data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useFocusEffect(
+        React.useCallback(() => {
+          fetchTeams();
+        }, [])
+      )
 
     return (
         <ScrollView className="h-full pb-16" style={{ backgroundColor: colors.background_c1 }}>

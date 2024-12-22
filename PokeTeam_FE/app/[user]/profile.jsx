@@ -1,5 +1,4 @@
 import { Image, Text, View, TextInput, TouchableOpacity, Modal, FlatList, Dimensions, ScrollView } from 'react-native'
-import OverlayMessage from '../../components/OverlayMessage'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTheme } from '../../contexts/ThemeContext'
 import { colorsPalette } from '../../assets/colorsPalette'
@@ -36,8 +35,6 @@ const profile = () => {
 
   //States
   const [isEditing, setIsEditing] = useState(false)
-  const [isModalVisible, setIsModalVisible] = useState(false)
-  const [messageVisible, setMessageVisible] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isEditSuccess, setIsEditSuccess] = useState(false)
 
@@ -133,11 +130,6 @@ const profile = () => {
       return isSaved
     }
     setIsEditSuccess(await saveProfileData())
-    setMessageVisible(true);
-    setTimeout(() => {
-      setMessageVisible(false);
-    }, 2000);
-
   };
 
   // Handle changes in editing/non-editing mode
@@ -167,7 +159,11 @@ const profile = () => {
 
   const goToPokemon = (pokeName) => {
     setPokemonName(pokeName);
-    route.push('./description')
+    route.push(`/${glob.user}/description`)
+  }
+
+  const goToRatings = () => {
+    route.push(`/${glob.user}/rating`)
   }
 
   const swapPokemon = (index) => {
@@ -304,7 +300,7 @@ const profile = () => {
 
   return (
     <>
-      <ScrollView className="h-full pb-16" style={{ backgroundColor: colors.background_c1 }}>
+      <ScrollView className="h-full pb-12 pt-6" style={{ backgroundColor: colors.background_c1 }}>
         <View className="w-full" >
           <View className="justify-center items-center py-5">
             <TouchableOpacity
@@ -402,9 +398,13 @@ const profile = () => {
               ))}
             </View>
 
-            <Text className="mt-3 text-gray-600"> Note : {teamRating} sur 5</Text>
-          </View>
+            <Text className="mt-3 text-gray-600 mb-3"> Note : {teamRating} sur 5</Text>
 
+            <TouchableOpacity onPress={goToRatings} className="flex-row items-center justify-center w-1/3 p-2 rounded-md" style={{ backgroundColor: colors.primary }}>
+              <Text className="pr-1" style={{ color: colors.text2 }}>Rate other teams </Text>
+            </TouchableOpacity>
+            
+          </View>
         </View>
 
 
@@ -427,12 +427,6 @@ const profile = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-      <OverlayMessage
-        message={isEditSuccess ? "Changes saved successfully!" : "Error changes did not save"}
-        styles={isEditSuccess ? { backgroundColor: "#bbf7d0", borderColor: "#22c55e" } : { backgroundColor: "#fecaca", borderColor: "#dc2626" }}
-        visible={messageVisible}
-        onDismiss={() => { setMessageVisible(false) }}
-      />
     </>
   )
 }
