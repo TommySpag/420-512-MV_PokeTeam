@@ -12,9 +12,6 @@ import { useGenerationsTheme } from '../../contexts/generationContext';
 import { usePokemonTheme } from '../../contexts/pokemonContext';
 import * as ImagePicker from 'expo-image-picker';
 
-const WIDTH = Dimensions.get('window').width
-
-
 
 const profile = () => {
   const { theme } = useTheme()
@@ -161,12 +158,12 @@ const profile = () => {
     route.push('/')
   }
   const goToGens = () => {
-    route.push('/nonUserBasePages/generations')
+    route.push(`/${glob.user}/generations`)
   }
 
   const goToPokemon = (pokeName) => {
     setPokemonName(pokeName);
-    route.push('/nonUserBasePages/description')
+    route.push('./description')
   }
 
   const swapPokemon = (index) => {
@@ -202,7 +199,7 @@ const profile = () => {
         setSelectedPokemonIndex(null);
       }
     } else {
-      route.push(`/nonUserBasePages/description`);
+      route.push('./description');
     }
   };
 
@@ -414,7 +411,7 @@ const profile = () => {
         <View className="w-full items-center">
           <View className="flex-row justify-center items-center py-10 gap-5">
             <TouchableOpacity onPress={logOut} className="flex-row items-center justify-center w-1/3 p-2 rounded-md" style={{ backgroundColor: colors.lightAlert }}>
-              <Text className="pr-1" style={{ color: colors.lightText }}>Déconnextion </Text>
+              <Text className="pr-1" style={{ color: colors.lightText }}>Déconnexion </Text>
               <Icon name="sign-out-alt" size={30} color={colors.lightText} />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => { setIsEditing((prev) => { return !prev }) }} className="flex-row items-center justify-center w-1/3 p-2 rounded-md" style={{ backgroundColor: colors.lightAlert }}>

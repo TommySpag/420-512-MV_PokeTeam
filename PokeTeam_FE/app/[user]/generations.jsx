@@ -14,8 +14,8 @@ const WIDTH = Dimensions.get('window').width;
 const generations = () => {
   const { theme } = useTheme();
   const colors = colorsPalette[theme];
-  const {setGeneration} = useGenerationsTheme();
   const glob = useGlobalSearchParams();
+  const {setGeneration} = useGenerationsTheme();
   const route = useRouter();
   const [nbOfGens, setNbOfGens] = useState(0);
   const [viewsPerGen, setViewsPerGen] = useState([]);
@@ -25,7 +25,11 @@ const generations = () => {
 
   const goToPokemons = (generation) => {
     setGeneration(generation);
-    route.push('/nonUserBasePages/pokemons');
+    route.push(`/${glob.user}/pokemons`);
+  }
+
+  const goToProfile = () => {
+    route.push(`/${glob.user}/profile`);
 }
 
   useEffect(() => {
@@ -109,6 +113,13 @@ const generations = () => {
       <ScrollView>
         {viewsPerGen}
       </ScrollView>
+      <TouchableOpacity
+            style={{ backgroundColor: colors.btnBorderAndTextColor, borderColor: colors.primary}}
+            className="py-4 px-6 rounded-md border my-2 self-center w-3/4"
+            onPress={goToProfile}
+        >
+            <Text className="text-center text-2xl font-bold font-sans" style={{ color: colors.primary }}>Go back</Text>
+      </TouchableOpacity>
     </View>
   );
 };

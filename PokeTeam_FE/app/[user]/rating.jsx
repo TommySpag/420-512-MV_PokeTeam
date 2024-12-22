@@ -5,48 +5,15 @@ import { useLoading } from '../../contexts/loadingContext';
 import { colorsPalette } from '../../assets/colorsPalette';
 import { getPokemonInfoByName, getAllPokeTeamsAndRatings, updateTeamRating } from '../../lib/axios'; 
 import { Ionicons } from '@expo/vector-icons';
+import { useGlobalSearchParams } from "expo-router";
 
 const TeamsPage = () => {
     const { theme } = useTheme();
     const { setLoading } = useLoading();
     const [teams, setTeams] = useState([]);
     const [pokemonData, setPokemonData] = useState([]);
+    const glob = useGlobalSearchParams();
     const colors = colorsPalette[theme];
-
-    // Mock team data when backend is down
-    const mockTeams = [{
-        id: 1,
-        pokemon1_id: 25,
-        pokemon2_id: 3,
-        pokemon3_id: 6,
-        pokemon4_id: 9,
-        pokemon5_id: 143,
-        pokemon6_id: 131,
-        rating: 0,
-        nbT_Rated: 0
-    },
-    {
-        id: 2,
-        pokemon1_id: 36,
-        pokemon2_id: 94,
-        pokemon3_id: 115,
-        pokemon4_id: 71,
-        pokemon5_id: 38,
-        pokemon6_id: 9,
-        rating: 0,
-        nbT_Rated: 0
-    },
-    {
-        id: 3,
-        pokemon1_id: 103,
-        pokemon2_id: 65,
-        pokemon3_id: 59,
-        pokemon4_id: 112,
-        pokemon5_id: 130,
-        pokemon6_id: 18,
-        rating: 0,
-        nbT_Rated: 0
-    }];
 
     // Fetch the Pokémon data for each team
     const fetchPokemonData = async (pokeIds) => {
@@ -130,7 +97,7 @@ const TeamsPage = () => {
             setLoading(true);
             try {
                 // Try to fetch the teams and ratings from the backend
-                const teamsData = await getAllPokeTeamsAndRatings();
+                const teamsData = await getAllPokeTeamsAndRatings(glob.user);
                 setTeams(teamsData); // Set the teams in state
 
                 // Fetch Pokémon data for the teams
@@ -156,29 +123,6 @@ const TeamsPage = () => {
                 setPokemonData(newPokemonData);
             } catch (error) {
                 console.log('Error fetching teams or Pokémon data:', error);
-                // Fallback to mock team data if the backend is down
-                setTeams(mockTeams);
-                // Still fetch Pokémon data from PokéAPI
-                const updatedPokemonData = [];
-                for (let team of mockTeams) {
-                    const pokeIds = [
-                        team.pokemon1_id,
-                        team.pokemon2_id,
-                        team.pokemon3_id,
-                        team.pokemon4_id,
-                        team.pokemon5_id,
-                        team.pokemon6_id
-                    ];
-                    const teamPokemonData = await fetchPokemonData(pokeIds);
-                    updatedPokemonData.push({ teamId: team.id, data: teamPokemonData });
-                }
-
-                const newPokemonData = {};
-                updatedPokemonData.forEach((data) => {
-                    newPokemonData[data.teamId] = data.data;
-                });
-
-                setPokemonData(newPokemonData);
             } finally {
                 setLoading(false);
             }
@@ -200,8 +144,7 @@ const TeamsPage = () => {
             </View>
             {teams.length === 0 ? (
                 <View className="flex-1 justify-center items-center">
-                    <ActivityIndicator size="large" color={colors.primary} />
-                    <Text style={{ color: colors.text, marginTop: 16 }}>Loading teams...</Text>
+                    <Text style={{ color: colors.text, marginTop: 16 }}>No teams currently available</Text>
                 </View>
             ) : (
                 <FlatList

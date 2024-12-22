@@ -36,7 +36,6 @@ const Layout = () => {
           <Drawer 
               screenOptions={{
                 swipeEnabled:false,
-                // headerShown:false,
                 header: ({navigation}) => <CustomDrawerHeader navigation={navigation} tabName={""} />
               }
             }>

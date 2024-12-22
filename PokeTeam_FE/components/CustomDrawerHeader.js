@@ -12,10 +12,9 @@ const CustomDrawerHeader = ({navigation, tabName}) => {
   const colors = colorsPalette[theme];
   return (
     <SafeAreaView style={[styles.header,{backgroundColor:colors.navBarBackground}]}>
-        
-        <TouchableOpacity style={[styles.content]} onPress={() => {navigation.openDrawer();}}>
+        <TouchableOpacity style={[styles.content]} onPress={() => {navigation.navigate("index")}}>
         <Text>
-            <Icon name="bars" size={30} color={colors.navBarIcons}/>
+            <Icon name="home" size={30} color={colors.navBarIcons}/>
         </Text>
       </TouchableOpacity>
       <View style={styles.imageContainer}>

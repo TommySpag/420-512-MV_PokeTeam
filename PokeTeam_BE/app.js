@@ -44,43 +44,6 @@ app.post("/pokeusers/signin", async (req, res) => {
     }
 });
 
-app.post("/pokeusers/signin", async (req, res) => {
-    const { usernameOrEmail, password } = req.body;
-    console.log("Post : users/signin")
-
-    // Check if username or email and password are provided
-    if (!usernameOrEmail || !password) {
-        return res.status(400).json({ error: "Username or email and password are required." });
-    }
-
-    try {
-        // Modify the user retrieval function to accept either username or email
-        console.log(`End point request with user/email : ${usernameOrEmail} and pass : ${password}`)
-
-        console.log(`hello`)
-
-        const user = await getPokeUserByUsernameOrEmailAndPassword(usernameOrEmail, password);
-        console.log(`Found user : ${user}`)
-        if (!user) {
-            return res.status(401).json({ error: "Invalid username/email or password." });
-        }
-        const userId = user.id
-        const token = jwt.sign({ userId }, SECRET_KEY, { expiresIn: '1h' });
-        // Return user data (ensure sensitive data like password is not returned)
-        res.status(200).json({
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            token
-            // Add any other fields you want to include in the response
-        });
-    } catch (error) {
-        console.error('Error retrieving user: ', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-
 app.post("/pokeusers", async (req, res) => {
     const { username, password, email } = req.body;
 
@@ -413,8 +376,19 @@ app.put("/pokeusers/modifypoke/:id", async (req, res) => {
 
 })
 
-app.get("/pokeusers/TeamAndRatings", async (req, res) => {
+app.get("/pokeusers/TeamAndRatings/:id", async (req, res) => {
     try {
+        const token = req.headers['authorization']?.split(' ')[1];
+        if (!token) return res.status(403).send('Forbidden');
+
+        const decoded = jwt.verify(token, SECRET_KEY);
+        if (!decoded?.userId) {
+            return res.status(401).json({ error: "Forbidden: badToken" });
+        }
+
+        if (decoded.userId != userId) {
+            return res.status(409).json({ error: "Forbidden: you are not allowed to get this info" });
+        }
         const teamData = await getAllPokeTeamsAndRatings();
 
         if (!teamData || teamData.length === 0) {

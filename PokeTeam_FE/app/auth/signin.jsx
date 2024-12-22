@@ -110,9 +110,6 @@ const signin = () => {
               </View>
 
               <View className="justify-end items-end" style={{ width: WIDTH_BTN }} >
-                <Link href="./recovery">
-                  <Text style={{ color: colors.black }}>Identifiant oublié?</Text>
-                </Link>
               </View>
               {alertIdentifier ? <Text className="pt-1" style={{ color: colors.alert }}>Identifiant : Ce champs doit être rempli</Text> : null}
             </View>
@@ -129,9 +126,6 @@ const signin = () => {
                 {alertMDP ? <Icon name="exclamation-triangle" size={30} color={colors.alert} style={{ position: 'absolute', right: 15, }} /> : null}
               </View>
               <View className="justify-end items-end" style={{ width: WIDTH_BTN }} >
-                <Link href="./recovery">
-                  <Text style={{ color: colors.black }}>Mot de passe oublié?</Text>
-                </Link>
               </View>
               {alertMDP ? <Text className="pt-1" style={{ color: colors.alert }}>Mot de passe : Ce champs doit être rempli</Text> : null}
 

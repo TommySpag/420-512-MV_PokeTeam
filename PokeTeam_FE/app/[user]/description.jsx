@@ -66,8 +66,8 @@ const PokemonDetails = () => {
 
 
 
-    const goToGenerations = () => {
-        route.push('/nonUserBasePages/generations');
+    const goToPokemons = () => {
+        route.push(`/${glob.user}/pokemons`);
     }
 
 
@@ -166,7 +166,7 @@ const PokemonDetails = () => {
                     <TouchableOpacity
                         style={{ backgroundColor: colors.navBarBackground, borderColor: colors.btnBorderAndTextColor }}
                         className="rounded-lg shadow-lg p-4 m-2 flex-row items-center p-4 border border-gray-300"
-                        
+                        onPress={handleAdd}
                     >
                         <Text style={{ color: colors.descriptionText }} className="text-lg font-bold">Add to team </Text>
                     </TouchableOpacity>
@@ -176,9 +176,9 @@ const PokemonDetails = () => {
                     <TouchableOpacity
                         style={{ backgroundColor: colors.navBarBackground, borderColor: colors.btnBorderAndTextColor }}
                         className="rounded-lg shadow-lg p-4 m-2 flex-row items-center p-4 border border-gray-300"
-                        onPress={handleAdd}
+                        onPress={goToPokemons}
                     >
-                        <Text style={{ color: colors.descriptionText }} className="text-lg font-bold">go back</Text>
+                        <Text style={{ color: colors.descriptionText }} className="text-lg font-bold">Go back</Text>
                     </TouchableOpacity>
                 </View>
         </ScrollView>

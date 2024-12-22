@@ -107,7 +107,7 @@ export async function addPokemonToPokeUserTeam(pokeID, userID, placement){
 
 export async function getAllPokeTeamsAndRatings(){
     console.log(`Database : getting PokeTeams and Ratings`)
-    const [rows] = await pool.query(`Select * from pokeUsers`)
+    const [rows] = await pool.query(`select * from pokeUsers`)
     return rows[0]
 }
 
