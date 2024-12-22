@@ -265,7 +265,7 @@ app.delete("/pokeusers/removepoke/:userid/:pokeid", async (req, res) => {
     if (!token) return res.status(403).send('Forbidden');
     
     const userId = req.params.userid;
-    const removedPokeId = parseInt(req.params.pokeid,10);
+    const removedPokeId = parseInt(req.params.pokeid, 10);
 
     let decoded;
     try {
@@ -284,36 +284,38 @@ app.delete("/pokeusers/removepoke/:userid/:pokeid", async (req, res) => {
     }
 
     try {
-        const pokeTeam = {
-            pokemon1_id: user.pokemon1_id,
-            pokemon2_id: user.pokemon2_id,
-            pokemon3_id: user.pokemon3_id,
-            pokemon4_id: user.pokemon4_id,
-            pokemon5_id: user.pokemon5_id,
-            pokemon6_id: user.pokemon6_id
-        };
+        let pokeTeam = [
+            user.pokemon1_id,
+            user.pokemon2_id,
+            user.pokemon3_id,
+            user.pokemon4_id,
+            user.pokemon5_id,
+            user.pokemon6_id
+        ];
 
         console.log('Initial pokeTeam:', pokeTeam);
 
-        // Find the index of the Pokémon to remove and set it to an empty string
-        let updated = false;
-        for (let i = 0; i < 6; i++) {
-            if (pokeTeam[`pokemon${i + 1}_id`] === removedPokeId) {
-                console.log(`Removing Pokémon ID: ${removedPokeId} from slot pokemon${i + 1}_id`);
-                pokeTeam[`pokemon${i + 1}_id`] = null;
-                updated = true;
-                break;
-            }
-        }
+        let indexToRemove = pokeTeam.indexOf(removedPokeId);
 
-        if (!updated) {
+        if (indexToRemove === -1) {
             return res.status(404).json({ error: "Pokémon not found in team" });
         }
+        for (let i = indexToRemove; i < pokeTeam.length - 1; i++) {
+            pokeTeam[i] = pokeTeam[i + 1];
+        }
+        pokeTeam[pokeTeam.length - 1] = null;
 
         console.log('Updated pokeTeam:', pokeTeam);
 
-        // Update the team with the new pokeTeam object
-        const result = await updatePokeUserTeam(userId, pokeTeam);
+        const result = await updatePokeUserTeam(userId, {
+            pokemon1_id: pokeTeam[0],
+            pokemon2_id: pokeTeam[1],
+            pokemon3_id: pokeTeam[2],
+            pokemon4_id: pokeTeam[3],
+            pokemon5_id: pokeTeam[4],
+            pokemon6_id: pokeTeam[5]
+        });
+
         if (!result) {
             return res.status(500).json({ error: `Error updating user team` });
         }

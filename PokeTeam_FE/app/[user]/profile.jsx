@@ -262,23 +262,17 @@ const profile = () => {
     updatedTeam[index] = "";
   
     try {
-      await deletePokemon(userId, pokeId);
 
+      await deletePokemon(userId, pokeId);
+  
       setPokeTeam(updatedTeam);
+
+      loadProfileData();
   
       console.log("Pokemon deleted successfully");
     } catch (error) {
       console.error("Error deleting Pokemon:", error);
     }
-  };
-
-  const requestCameraPermission = async () => {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== 'granted') {
-      alert('Camera access is required to upload profile pictures.');
-      return false;
-    }
-    return true;
   };
 
   const handleProfilePicPress = async () => {
