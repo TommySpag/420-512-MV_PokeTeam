@@ -101,10 +101,9 @@ const signin = () => {
               <View className="flex-row items-center">
                 <TextInput
                   className="justify-center py-5 rounded-lg text-center"
-                  style={[{ color: colors.text, backgroundColor: colors.background, width: WIDTH_BTN }, alertIdentifier ? { paddingRight: 56, borderWidth: 2, borderColor: colors.alert } : {}]}
-                  onChangeText={(item) => { setForm({ ...form, usernameOrEmail: item }) }}
+                  style={[{backgroundColor: colors.background, width: WIDTH_BTN, textAlign: 'center', }, { ...colors.letter, fontSize: 20 }, alertIdentifier ? { paddingRight: 56, borderWidth: 2, borderColor: colors.alert } : {}]}
                   placeholder="Entrez l'identifiant"
-                  placeholderTextColor={colors.secondary}
+                  onChangeText={(item) => setForm({ ...form, usernameOrEmail: item })}
                   value={form.usernameOrEmail}
                 />
                 {alertIdentifier ? <Icon className="absolute right-4" name="exclamation-triangle" size={30} color={colors.alert} /> : null}
@@ -112,7 +111,7 @@ const signin = () => {
 
               <View className="justify-end items-end" style={{ width: WIDTH_BTN }} >
                 <Link href="./recovery">
-                  <Text style={{ color: colors.black}}>Identifiant oublié?</Text>
+                  <Text style={{ color: colors.black }}>Identifiant oublié?</Text>
                 </Link>
               </View>
               {alertIdentifier ? <Text className="pt-1" style={{ color: colors.alert }}>Identifiant : Ce champs doit être rempli</Text> : null}
@@ -121,11 +120,10 @@ const signin = () => {
               <View className="flex-row items-center" >
                 <TextInput
                   className="justify-center py-5 rounded-lg text-center"
-
-                  style={[{ width: WIDTH_BTN, color: colors.text, backgroundColor: colors.background }, alertMDP ? { paddingRight: 56, borderWidth: 2, borderColor: colors.alert } : {}]}
+                  style={[{ width: WIDTH_BTN, color: colors.text, backgroundColor: colors.background },{ ...colors.letter, fontSize: 20 }, alertMDP ? { paddingRight: 56, borderWidth: 2, borderColor: colors.alert } : {}]}
                   onChangeText={(item) => { setForm({ ...form, password: item }) }}
                   placeholder='Entrez le mot de passe'
-                  placeholderTextColor={colors.secondary}
+                  placeholderTextColor={colors.letter}
                   value={form.password}
                 />
                 {alertMDP ? <Icon name="exclamation-triangle" size={30} color={colors.alert} style={{ position: 'absolute', right: 15, }} /> : null}
@@ -165,5 +163,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row', // Aligne les lettres horizontalement
   },
 
-  
+
 });
