@@ -52,18 +52,17 @@ const profile = () => {
     try {
       setLoading(true);
   
-      const fetchedData = await fetchProfileData(glob.user); // Fetch data
+      const fetchedData = await fetchProfileData(glob.user);
       if (!fetchedData) throw new Error('Failed fetching data -> no Data');
-  
-      // Update individual states directly
+
       setUsername(fetchedData.username || "Default");
       setEmail(fetchedData.email || "Default@abc.ca");
       setProfilePic(fetchedData.profilePic || '');
   
       const tempList = [];
-      for (let i = 1; i <= 6; i++) { // Ensure correct indices (1-based keys)
+      for (let i = 1; i <= 6; i++) {
         const key = `pokemon${i}_id`;
-        tempList.push(fetchedData[key] || ""); // Handle missing data
+        tempList.push(fetchedData[key] || "");
       }
       setPokeTeam(tempList);
   
@@ -71,26 +70,25 @@ const profile = () => {
         ? Math.round(fetchedData.team_grade / fetchedData.nbT_Rated) 
         : 0;
       setTeamRating(rating);
-  
-      // Update profileData last if needed for other purposes
+
       setProfileData(fetchedData);
     } catch (error) {
       console.log('Profile: Failed loading profile data:', error);
-      // route.push("/auth/signin") // Uncomment if needed
+      route.push("/auth/signin")
     } finally {
       setLoading(false);
     }
   };
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     loadProfileData();
-  //     setIsMounted(true);
-  //     return () => {
-  //       setIsMounted(false);
-  //     };
-  //   }, [])
-  // )
+  useFocusEffect(
+    React.useCallback(() => {
+      loadProfileData();
+      setIsMounted(true);
+      return () => {
+        setIsMounted(false);
+      };
+    }, [])
+  )
 
 
   //Function to retrieve the data of a pokemon from pokeApi
