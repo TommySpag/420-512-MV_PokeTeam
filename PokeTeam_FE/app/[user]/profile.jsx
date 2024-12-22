@@ -51,27 +51,35 @@ const profile = () => {
   const loadProfileData = async () => {
     try {
       setLoading(true);
-      setProfileData(await fetchProfileData(glob.user));
-      if (!profileData) throw new Error('Failed fetching data -> no Data')
-      setUsername(profileData.username);
-      setEmail(profileData.email);
-      if (profileData.profilePic) {
-        setProfilePic(profileData.profilePic);
-      }
+  
+      const fetchedData = await fetchProfileData(glob.user); // Fetch data
+      if (!fetchedData) throw new Error('Failed fetching data -> no Data');
+  
+      // Update individual states directly
+      setUsername(fetchedData.username || "Default");
+      setEmail(fetchedData.email || "Default@abc.ca");
+      setProfilePic(fetchedData.profilePic || '');
+  
       const tempList = [];
-      for (let i; i < 6; i++) {
-        let key = `pokemon${i}_id`
-        tempList.push(profileData[key])
+      for (let i = 1; i <= 6; i++) { // Ensure correct indices (1-based keys)
+        const key = `pokemon${i}_id`;
+        tempList.push(fetchedData[key] || ""); // Handle missing data
       }
-      // setPokeTeam(tempList);
-
-      setTeamRating(Math.round(profileData.team_grade / profileData.nbT_Rated));
-
+      setPokeTeam(tempList);
+  
+      const rating = fetchedData.nbT_Rated > 0 
+        ? Math.round(fetchedData.team_grade / fetchedData.nbT_Rated) 
+        : 0;
+      setTeamRating(rating);
+  
+      // Update profileData last if needed for other purposes
+      setProfileData(fetchedData);
     } catch (error) {
-      console.log('Profile : Failed Loading profileData : ', error)
-      // route.push("/auth/signin")
+      console.log('Profile: Failed loading profile data:', error);
+      // route.push("/auth/signin") // Uncomment if needed
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useFocusEffect(
