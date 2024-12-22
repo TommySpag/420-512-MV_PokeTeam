@@ -1,5 +1,5 @@
 import express from 'express';
-import { getPokeUserByUsernameOrEmailAndPassword, createPokeUser, getPokeUserByUsernameOrEmail, getPokeUserById, updatePokeUserProfile, deletePokeUserById, updatePokeUserTeam,addPokemonToPokeUserTeam } from './database.js'
+import { getPokeUserByUsernameOrEmailAndPassword, createPokeUser, getPokeUserByUsernameOrEmail, getPokeUserById, updatePokeUserProfile, deletePokeUserById, updatePokeUserTeam,getAllPokeTeamsAndRatings, updateTeamRating ,addPokemonToPokeUserTeam } from './database.js'
 import jwt from 'jsonwebtoken';
 import cors from 'cors'
 
@@ -62,7 +62,6 @@ app.post("/pokeusers", async (req, res) => {
         // Proceed to create the user
         const newUser = await createPokeUser(email, username, password);
         const token = jwt.sign({ userId: newUser.id }, SECRET_KEY, { expiresIn: '1h' });
-        console.log(token)
         // Return the newly created user information
         res.status(201).json({
             id: newUser.id,
@@ -388,6 +387,7 @@ app.put("/pokeusers/modifypoke/:id", async (req, res) => {
 app.get("/pokeusers/TeamAndRatings/:id", async (req, res) => {
     try {
         const token = req.headers['authorization']?.split(' ')[1];
+        const userId = req.params.id;
         if (!token) return res.status(403).send('Forbidden');
 
         const decoded = jwt.verify(token, SECRET_KEY);
@@ -399,6 +399,7 @@ app.get("/pokeusers/TeamAndRatings/:id", async (req, res) => {
             return res.status(409).json({ error: "Forbidden: you are not allowed to get this info" });
         }
         const teamData = await getAllPokeTeamsAndRatings();
+        console.log(teamData)
 
         if (!teamData || teamData.length === 0) {
             return res.status(404).json({ error: 'No teams or ratings found' });
@@ -426,6 +427,7 @@ app.get("/pokeusers/TeamAndRatings/:id", async (req, res) => {
         res.status(500).json({ error: 'Internal server error.' });
     }
 });
+
 app.put("/pokeusers/modifyrating/:id", async (req, res) => {
     try {
         
