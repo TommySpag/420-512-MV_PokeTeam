@@ -111,7 +111,7 @@ export async function getAllPokeTeamsAndRatings(){
     return rows
 }
 
-export async function updateTeamRating(userId,userData){
+export async function updateTeamRating(userId, userData){
     //DEBUG
     console.log(`Database : update Rating with userData.id : ${userId}`)
     //

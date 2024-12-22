@@ -3,7 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Image, Style
 import { useTheme } from '../../contexts/ThemeContext';
 import { useLoading } from '../../contexts/loadingContext';
 import { colorsPalette } from '../../assets/colorsPalette';
-import { getPokemonInfoByName, getAllPokeTeamsAndRatings, updateTeamRating } from '../../lib/axios'; 
+import { getPokemonInfoByName, getAllPokeTeamsAndRatings, updateTeamRating } from '../../lib/axios';
 import { Ionicons } from '@expo/vector-icons';
 import { useGlobalSearchParams, useFocusEffect } from "expo-router";
 
@@ -59,57 +59,97 @@ const TeamsPage = () => {
         ));
     };
 
-    const handleRatingChange = async (teamId, newRating) => {
-        // Update rating locally
-        setTeams((prevTeams) => {
-            return prevTeams.map((team) => {
+    const handleRating = async (teamId, newRating) => {
+        setTeams((prevTeams) =>
+            prevTeams.map((team) => {
                 if (team.id === teamId) {
-                    // Calculate new sum of ratings and update nbT_Rated
                     const updatedSumOfRatings = team.rating + newRating;
                     const updatedNbRated = team.nbT_Rated + 1;
-
                     return {
                         ...team,
                         rating: updatedSumOfRatings,
-                        nbT_Rated: updatedNbRated
+                        nbT_Rated: updatedNbRated,
+                        avgRating: (updatedSumOfRatings / updatedNbRated).toFixed(1),
                     };
                 }
                 return team;
-            });
-        });
-
-        // Update the rating on the backend
+            })
+        );
+    
+        const updatedTeam = teams.find((team) => team.id === teamId);
+        if (!updatedTeam) return;
+    
+        const payload = {
+            ...updatedTeam,
+            rating: updatedTeam.rating + newRating,
+            nbT_Rated: updatedTeam.nbT_Rated + 1,
+        };
+    
+        console.log('Payload being sent to the backend:', payload);
+    
         try {
-            const userData = {
-                id: teamId,
-                rating: newRating,
-                nbT_Rated: 1
-            };
-            await updateTeamRating(userData);
-            console.log('Rating updated successfully!');
+            // Send the update to the backend
+            await updateTeamRating(teamId, payload);
+            console.log(`Successfully updated rating for team ${teamId}`);
         } catch (error) {
-            console.log('Error updating team rating:', error);
+            console.error(`Error updating rating for team ${teamId}:`, error);
         }
+    };
+
+    const calculateAverageRatings = (teams) => {
+        return teams.map((team) => {
+            const avgRating = team.nbT_Rated > 0 ? team.rating / team.nbT_Rated : 0; // Avoid division by zero
+            return {
+                ...team,
+                avgRating: avgRating.toFixed(1), // Optional: Limit the decimal places to 1
+            };
+        });
+    };
+
+    const renderStars = (team) => {
+        const avgRating = team.avgRating;
+
+        return (
+            <View style={{ flexDirection: 'row', marginTop: 16, justifyContent: 'center', alignItems: 'center' }}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                    <TouchableOpacity
+                        key={star}
+                        onPress={() => handleRating(team.id, star)} // Call handleRating when a star is clicked
+                        style={{ marginHorizontal: 4 }}
+                    >
+                        <Ionicons
+                            size={24}
+                            name={star <= avgRating ? 'star' : 'star-outline'}
+                            color={star <= avgRating ? '#FACC15' : '#D1D5DB'}
+                        />
+                    </TouchableOpacity>
+                ))}
+            </View>
+        );
     };
 
     const fetchTeams = async () => {
         setLoading(true);
         try {
-            // Try to fetch the teams and ratings from the backend
+            // Fetch the teams and ratings from the backend
             const teamsData = await getAllPokeTeamsAndRatings(glob.user);
             const validTeamsData = teamsData.filter(team => team.pokemon1_id !== null);
-            setTeams(validTeamsData); // Set the teams in state
+
+            // Calculate average ratings for each team
+            const teamsWithAvgRating = calculateAverageRatings(validTeamsData);
+
+            setTeams(teamsWithAvgRating); // Set the updated teams in state
 
             // Fetch Pokémon data for the teams
             const updatedPokemonData = [];
-            for (let team of validTeamsData) {
+            for (let team of teamsWithAvgRating) {
                 const pokeIds = [
                     team.pokemon1_id,
                     team.pokemon2_id,
                     team.pokemon3_id,
                     team.pokemon4_id,
                     team.pokemon5_id,
-                    team.pokemon6_id
+                    team.pokemon6_id,
                 ];
                 const teamPokemonData = await fetchPokemonData(pokeIds);
                 updatedPokemonData.push({ teamId: team.id, data: teamPokemonData });
@@ -130,9 +170,9 @@ const TeamsPage = () => {
 
     useFocusEffect(
         React.useCallback(() => {
-          fetchTeams();
+            fetchTeams();
         }, [])
-      )
+    )
 
     return (
         <ScrollView className="h-full pb-16" style={{ backgroundColor: colors.background_c1 }}>
@@ -169,22 +209,7 @@ const TeamsPage = () => {
                             <View style={{ marginTop: 8 }}>
                                 {renderPokemon(item)}
                             </View>
-
-                            <View style={{ flexDirection: 'row', marginTop: 16, justifyContent: 'center', alignItems: 'center' }}>
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                    <TouchableOpacity
-                                        key={star}
-                                        onPress={() => handleRatingChange(item.id, star)}
-                                        className="m-3"
-                                    >
-                                        <Ionicons
-                                            size={24}
-                                            name={star <= item.sumOfRatings / item.nbT_Rated ? 'star' : 'star-outline'}
-                                            color={star <= item.sumOfRatings / item.nbT_Rated ? '#FACC15' : '#D1D5DB'}
-                                        />
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
+                            {renderStars(item)}
                         </View>
                     )}
                 />

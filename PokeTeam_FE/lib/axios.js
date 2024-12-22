@@ -356,10 +356,10 @@ export async function getAllPokeTeamsAndRatings(userId) {
 }
 
 
-export async function updateTeamRating(userData){
+export async function updateTeamRating(teamId ,userData){
     try {
         console.log(`Trying to updateTeamData with userData: ${userData}`);
-        const updateData = await api.put(`/pokeusers/modifyrating/:${userData.id}`,userData,{
+        const updateData = await api.put(`/pokeusers/modifyrating/${teamId}`,userData,{
             header:{
                 Authorization: 'none',
             },
