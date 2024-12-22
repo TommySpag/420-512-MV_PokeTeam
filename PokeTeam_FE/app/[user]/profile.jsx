@@ -379,9 +379,9 @@ const profile = () => {
             <FlatList
               scrollEnabled={false}
               numColumns={3}
-              data={pokemonData}
+              data={pokemonData.slice(0,6)}
               renderItem={Item}
-              keyExtractor={item => item.id}
+              keyExtractor={(item, index) => index.toString()}
             />
           </View>
 

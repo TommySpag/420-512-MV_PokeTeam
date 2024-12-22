@@ -1,5 +1,5 @@
 import express from 'express';
-import { getPokeUserByUsernameOrEmailAndPassword, createPokeUser, getPokeUserByUsernameOrEmail, getPokeUserById, updatePokeUserProfile, deletePokeUserById, updatePokeUserTeam } from './database.js'
+import { getPokeUserByUsernameOrEmailAndPassword, createPokeUser, getPokeUserByUsernameOrEmail, getPokeUserById, updatePokeUserProfile, deletePokeUserById, updatePokeUserTeam,addPokemonToPokeUserTeam } from './database.js'
 import jwt from 'jsonwebtoken';
 import cors from 'cors'
 
@@ -233,13 +233,13 @@ app.put("/pokeusers/addpoke/:userid/:pokeid", async (req, res) => {
             return res.status(404).json({ error: `Error while updating data` });
         }
 
-        const nbPokemon = 0;
+        let nbPokemon = 0;  // Change 'const' to 'let'
         for (let index = 6; index > 0; index--) {
             if (user?.[`pokemon${index}_id`] !== null) {
                 nbPokemon++;
             }
         }
-
+        
         if (nbPokemon == 6) {
             return res.status(400).json({ error: `Error: Team Full` });
         }

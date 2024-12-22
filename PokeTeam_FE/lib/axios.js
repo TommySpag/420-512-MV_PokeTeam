@@ -136,11 +136,10 @@ export async function deleteUserById(id){
 export async function updateProfileAddPoke(userId, pokeId) {
     try {
       console.log(`Trying to updateProfileAddPoke with userId: ${userId} and pokeId: ${pokeId}`);
-      const updateData = await axios.put(`/pokeusers/addpoke/${userId}/${pokeId}`);
-  
+      const updateData = await api.put(`/pokeusers/addpoke/${userId}/${pokeId}`);
       if (updateData.status !== 200) throw new Error('Failed to add Pokémon.');
   
-      return updateData.data;
+      return updateData.data; 
     } catch (error) {
       console.error('Error occurred while adding Pokémon:', error);
       throw new Error(error);

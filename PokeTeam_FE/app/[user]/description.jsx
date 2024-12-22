@@ -114,8 +114,11 @@ const PokemonDetails = () => {
     }, [description]);
 
     const handleAdd = async () => {
+        
         try {
-            const addPoke = await updateProfileAddPoke(glob.user);
+            const addPoke = await updateProfileAddPoke(glob.user, pokemon.id);
+            route.push(`/${glob.user}/profile`)
+            
             console.log("Pokemon added successfully:", addPoke);
         } catch (error) {
             console.error("Error occurred while adding Pokémon:", error);
@@ -125,6 +128,7 @@ const PokemonDetails = () => {
     if (!pokemon) {
         return <View><Text>Chargement des détails...</Text></View>;
     }
+
 
     return (
         <ScrollView className="bg-gray-100 p-4" contentContainerStyle={{ alignItems: 'center', paddingBottom: 20 }} style={[{ backgroundColor: colors.background_c1 }]}>
