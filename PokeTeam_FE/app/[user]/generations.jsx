@@ -103,7 +103,7 @@ const generations = () => {
 
   return (
     <View className="h-full pb-16" style={{ backgroundColor: colors.background_c1 }}>
-      <View style={{ height: 4, backgroundColor: colorsPalette.type[type]}} />
+      <View style={{ height: 5, backgroundColor: colorsPalette.type[type]}} />
       <View className="justify-center items-center gap-8 p-10">
         <Text style={styles.text}>
           {'Générations'.split('').map((letter, index) => (

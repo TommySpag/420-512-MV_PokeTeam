@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { IP_BACKEND } from '../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as FileSystem from 'expo-file-system';
 
 
 
@@ -104,17 +105,17 @@ export async function fetchProfileData(id){
         throw new Error(error)
     }
 }
-export async function updateProfileData(userData){
+export async function updateProfileData(userid, userData){
     try {
-        console.log(`Trying to update profileData with userData: ${userData}`);
-        const updateData = await api.put(`/pokeusers/${userData.id}`,userData,{
+        console.log(`Trying to update profileData with id: ${userid}`);
+        const updateData = await api.put(`/pokeusers/${userid}`,userData,{
             header:{
                 Authorization: 'none',
             },
             
         });
         if(!(updateData.status == 200)) throw Error;
-        
+
         return updateData.data
     } catch (error){
         throw new Error(error)

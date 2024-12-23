@@ -13,6 +13,7 @@ export const colorsPalette = {
     black:'black',//noir
     // red: #db3445
     text2: '#ffdb4e', // jaune
+    profileText: '#ffdb4e',
     btnBorderAndTextColor: '#ffdb4e',
     btnColor: '#FEC10C',
     navBarBackground: '#094582',
@@ -43,6 +44,7 @@ export const colorsPalette = {
     lightAlert: '#db8f8f',
     black:"white",
     text2: 'ff6500', // jaune
+    profileText: 'white',
     btnBorderAndTextColor: 'black',
     btnColor: '#DF1818',
     navBarBackground: 'black',

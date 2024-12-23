@@ -48,7 +48,7 @@ const PokemonsByGeneration = () => {
   return (
     <>
       <View className="h-full pb-16" style={{ backgroundColor: colors.background_c1 }}>
-        <View style={{ height: 4, backgroundColor: colorsPalette.type[type]}} />
+        <View style={{ height: 5, backgroundColor: colorsPalette.type[type]}} />
             <View className="justify-center gap-8 p-5">
               <Text className="flex-row">
                 {'Pokémons'.split('').map((letter, index) => (

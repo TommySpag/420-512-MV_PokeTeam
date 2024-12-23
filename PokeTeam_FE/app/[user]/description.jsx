@@ -134,7 +134,7 @@ const PokemonDetails = () => {
 
     return (
         <>
-            <View style={{ height: 4, backgroundColor: colorsPalette.type[type]}} />
+            <View style={{ height: 5, backgroundColor: colorsPalette.type[type]}} />
             <ScrollView className="bg-gray-100 p-4" contentContainerStyle={{ alignItems: 'center', paddingBottom: 20 }} style={[{ backgroundColor: colors.background_c1 }]}>
                 <View className="rounded-lg shadow-lg mb-2 w-3/4 border" style={{ backgroundColor: colors.navBarBackground, borderColor: colors.btnBorderAndTextColor }} >
                     <View className="flex-1 justify-center items-center"><Animated.Image style={{ width: 250, height: 300, opacity: fadeAnimation }} source={{ uri: pokemon.sprite }} /></View>

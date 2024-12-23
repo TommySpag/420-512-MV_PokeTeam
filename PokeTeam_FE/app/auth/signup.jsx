@@ -86,9 +86,7 @@ const SignUp = () => {
           className="flex-1 items-center"
           >
             <ScrollView showsVerticalScrollIndicator={false}>
-            <Image className="width" style={styles.image} 
-                source={require('../../assets/images/poketeamlogo.jpg')} 
-            />
+            <View className="flex-1 justify-center items-center mb-4"><Image  style={{ width: 300, height: 100}} source={require('../../assets/images/poketeamlogo.jpg')}/></View>
               <View className="flex-1 justify-center items-center gap-8" >
                 <Text style={styles.text}>
                   {text.split('').map((letter, index) => (
@@ -114,7 +112,7 @@ const SignUp = () => {
                       style={[{backgroundColor: colors.background, width: WIDTH_BTN, textAlign: 'center', }, { ...colors.letter, fontSize: 20 }, alertEmail ? { paddingRight: 56, borderWidth: 2, borderColor: colors.alert } : {}]}
                       onChangeText={(item) => {setForm({...form,email : item})}}
                       placeholder="Entrez votre courriel"
-                      placeholderTextColor={colors.letter}
+                      placeholderTextColor={colors.letter.color}
                       value={form.email}
                       />
                     {alertEmail ? <Icon className="absolute right-4" name="exclamation-triangle" size={30} color={colors.alert} />: null}
@@ -128,7 +126,7 @@ const SignUp = () => {
                       style={[{backgroundColor: colors.background, width: WIDTH_BTN, textAlign: 'center', }, { ...colors.letter, fontSize: 20 }, alertUsername ? { paddingRight: 56, borderWidth: 2, borderColor: colors.alert } : {}]}
                       onChangeText={(item) => {setForm({...form,username : item})}}
                       placeholder="Entrez l'identifiant"
-                      placeholderTextColor={colors.letter}
+                      placeholderTextColor={colors.letter.color}
                       value={form.username}
                       />
                     {alertUsername ? <Icon className="absolute right-4" name="exclamation-triangle" size={30} color={colors.alert} />: null}
@@ -144,7 +142,7 @@ const SignUp = () => {
                         style={[{backgroundColor: colors.background, width: WIDTH_BTN, textAlign: 'center', }, { ...colors.letter, fontSize: 20 }, alertMDP ? { paddingRight: 56, borderWidth: 2, borderColor: colors.alert } : {}]}
                         onChangeText={(item) => {setForm({...form,password : item})}}
                         placeholder='Entrez le mot de passe'
-                        placeholderTextColor={colors.letter}
+                        placeholderTextColor={colors.letter.color}
                         value={form.password}
                         />
                     {alertMDP ? <Icon className="absolute right-4" name="exclamation-triangle" size={30} color={colors.alert} />: null}

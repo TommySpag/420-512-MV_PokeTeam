@@ -1,4 +1,4 @@
-import { Image, Text, View, TextInput, TouchableOpacity, Modal, FlatList, Dimensions, ScrollView } from 'react-native'
+import { Image, Text, View, TextInput, TouchableOpacity, Modal, FlatList, Dimensions, ScrollView, SafeAreaView } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTheme } from '../../contexts/ThemeContext'
 import { colorsPalette } from '../../assets/colorsPalette'
@@ -13,6 +13,7 @@ import { useColorTypeTheme } from '../../contexts/colorTypeContext';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 
+const height = Dimensions.get("window").height;
 
 const profile = () => {
   const { theme } = useTheme()
@@ -53,7 +54,8 @@ const profile = () => {
       const fetchedData = await fetchProfileData(glob.user);
       if (!fetchedData) throw new Error('Failed fetching data -> no Data');
 
-      setUsername(fetchedData.username);
+      setMotDePasse(fetchedData.password)
+      setUsername(fetchedData.username)
       setEmail(fetchedData.email);
       setProfilePic(fetchedData.profilePic || '');
 
@@ -110,6 +112,9 @@ const profile = () => {
     if (pokeTeam && pokeTeam[0]) {
       getPokeLeaderType(pokeTeam[0]);
     }
+    else {
+      setType('original')
+    }
   }, [pokeTeam]);
 
 
@@ -140,13 +145,12 @@ const profile = () => {
     const saveProfileData = async () => {
 
       const userData = {
-        username,
-        email,
-        profilePic,
-        id: glob.user
+        email: email,
+        password: motDePasse,
+        profilePic: profilePic
       }
       try {
-        isSaved = await updateProfileData(userData)
+        isSaved = await updateProfileData(glob.user, userData)
       } catch (error) {
         console.log("Saving Error : ", error)
         isSaved = false
@@ -296,10 +300,13 @@ const profile = () => {
   };
 
   const requestCameraPermission = async () => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    const { status } = await ImagePicker.getCameraPermissionsAsync();
     if (status !== 'granted') {
-      alert('Camera permission is required to take a profile picture.');
-      return false;
+      const { status: newStatus } = await ImagePicker.requestCameraPermissionsAsync();
+      if (newStatus !== 'granted') {
+        alert('Camera permission is required to take a profile picture.');
+        return false;
+      }
     }
     return true;
   };
@@ -334,9 +341,9 @@ const profile = () => {
   };
 
   return (
-    <>
-      <View style={{ height: 4, backgroundColor: colorsPalette.type[type]}} />
-      <ScrollView className="h-full pb-12 pt-6" style={{ backgroundColor: colors.background_c1 }}>
+    <View className="flex-1"  style={{ backgroundColor: colors.background_c1 }}>
+      <View style={{ height: 5, backgroundColor: colorsPalette.type[type]}} />
+      <ScrollView className="pt-6">
         <View className="w-full" >
           <View className="justify-center items-center py-5">
             <TouchableOpacity
@@ -379,16 +386,16 @@ const profile = () => {
           </View>
           <View className="items-center">
             <View className="items-center border rounded-md w-2/4" style={{ borderColor: isEditing ? colors.lightAlert : colors.primary }}>
-              <Text className="absolute z-10 -top-2.5 left-3 px-1" style={{ backgroundColor: colors.background_c1, color: colors.text2 }}>email</Text>
+              <Text className="absolute z-10 -top-2.5 left-3 px-1" style={{ backgroundColor: colors.background_c1, color: colors.profileText }}>email</Text>
               {!isEditing ?
-                <Text className="py-3 px-2 text-xl" style={{color: colors.text2}}>{email}</Text>
+                <Text className="py-3 px-2 text-xl" style={{color: colors.profileText}}>{email}</Text>
                 :
                 <TextInput
                   className="justify-center z-0 py-5 rounded-lg text-center w-full py-5 rounded-lg text-center focus:border-2"
-                  style={[{ color: colors.text2, backgroundColor: colors.background }]}
+                  style={[{ color: colors.profileText, backgroundColor: colors.background }]}
                   onChangeText={(item) => { setEmail(item) }}
-                  placeholder="Entrez l'identifiant"
-                  placeholderTextColor={colors.text2}
+                  placeholder="Entrez l'email"
+                  placeholderTextColor={colors.profileText}
                   value={email}
                 />
               }
@@ -397,17 +404,17 @@ const profile = () => {
 
           <View className="items-center mt-8">
             <View className="items-center border rounded-md w-2/4" style={{ borderColor: isEditing ? colors.lightAlert : colors.primary }}>
-              <Text className="absolute z-10 -top-2.5 left-3 px-1" style={{ backgroundColor: colors.background_c1, color: colors.text2 }}>mot de passe</Text>
+              <Text className="absolute z-10 -top-2.5 left-3 px-1" style={{ backgroundColor: colors.background_c1, color: colors.profileText }}>mot de passe</Text>
               {!isEditing ?
-                <Text className="py-3 px-2 text-xl" style={{ color: colors.text2 }}>{motDePasse}</Text>
+                <Text className="py-3 px-2 text-xl" style={{ color: colors.profileText }}>{motDePasse}</Text>
                 :
                 <TextInput
                   className="justify-center z-0 py-5 rounded-lg text-center w-full"
-                  style={[{ color: colors.text2, backgroundColor: colors.background }]}
+                  style={[{ color: colors.profileText, backgroundColor: colors.background }]}
                   onChangeText={(item) => { setMotDePasse(item) }}
-                  placeholder="Entrez l'identifiant"
-                  placeholderTextColor={colors.text2}
-                  value={email}
+                  placeholder="Entrez le mot de passe"
+                  placeholderTextColor={colors.profileText}
+                  value={motDePasse}
                 />
               }
             </View>
@@ -466,14 +473,14 @@ const profile = () => {
               <Icon name="edit" size={30} color={colors.lightText} />
             </TouchableOpacity>
           </View>
-          <View className="" />
-          <TouchableOpacity onPress={supprimerUser} className="flex-row items-center justify-center w-1/3 p-2 rounded-md border" style={{ backgroundColor: colors.alert, borderColor: colors.btnBorderAndTextColor }}>
+          <View className="flex-row justify-center items-center gap-5" />
+          <TouchableOpacity onPress={supprimerUser} className="flex-row items-center justify-center w-1/3 p-2 rounded-md border mb-10" no style={{ backgroundColor: colors.alert, borderColor: colors.btnBorderAndTextColor }}>
             <Text className="pr-1" style={{ color: colors.lightText }}>Supprimer </Text>
             <Icon name="trash-alt" size={30} color={colors.lightText} />
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </>
+    </View>
   )
 }
 

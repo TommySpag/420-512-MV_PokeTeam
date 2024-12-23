@@ -57,17 +57,17 @@ export async function getPokeUserById(id){
     return rows[0]
 }
 
-export async function updatePokeUserProfile(userData){
+export async function updatePokeUserProfile(userData, userid){
     //DEBUG
-    console.log(`Database : update PokeUsers with userData.id : ${userData.id}`)
+    console.log(`Database : update PokeUsers with userid : ${userid}`)
     //
     const [rows] = await pool.query(`   UPDATE pokeUsers
                                         SET 
-                                            username = ?,
                                             email = ?,
+                                            password = ?,
                                             profilePic = ?
 
-                                        WHERE id = ?;`,[userData.username,userData.email,userData.profilePic,userData.id])
+                                        WHERE id = ?;`,[userData.email,userData.password,userData.profilePic,userid])
     return true
 }
 

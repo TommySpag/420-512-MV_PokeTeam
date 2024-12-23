@@ -36,9 +36,6 @@ const index = () => {
             <Image style={styles.image} 
                 source={require('../assets/images/poketeamlogo.jpg')} 
             />
-    
-  
-            
 
             <TouchableOpacity className={`rounded p-6`} style={{backgroundColor:colors.primary}} onPress={() => { router.push("./auth/signin")}}>
                 <Text className={`text-4xl`} style={{color:colors.text2}} >Sign in</Text>

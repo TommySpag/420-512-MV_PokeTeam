@@ -3,7 +3,7 @@ import { getPokeUserByUsernameOrEmailAndPassword, createPokeUser, getPokeUserByU
 import jwt from 'jsonwebtoken';
 import cors from 'cors'
 
-const SECRET_KEY = 'your_secret_key'; // Use a strong secret key in production
+const SECRET_KEY = 'sdfjuidshfiasdHgdfuw2FDEF3-+F=FDSyus747863423hjchew897ry378yuydtf87';
 
 const app = express();
 
@@ -111,6 +111,7 @@ app.get("/pokeusers/:id", async (req, res) => {
             id: user.id,
             username: user.username,
             email: user.email,
+            password: user.password,
             profilePic: user.profilePic,
             pokemon1_id: user.pokemon1_id,
             pokemon2_id: user.pokemon2_id,
@@ -139,7 +140,7 @@ app.put("/pokeusers/:id", async (req, res) => {
 
     const userData = req.body;
 
-    if (!userData || userId != userData?.id) {
+    if (!userData) {
         return res.status(409).json({ error: "Request missing userData" });
 
     }
@@ -154,12 +155,12 @@ app.put("/pokeusers/:id", async (req, res) => {
     }
     try {
         // Check for missing fields
-        if (!userData?.id || !userData?.username || !userData?.email || !userData?.profilePic) {
+        if (!userData?.email|| !userData?.password ||  !userData?.profilePic) {
             return res.status(400).json({ error: "Request body missing parameters" });
         }
 
         // alter user data
-        const user = await updatePokeUserProfile(userData);
+        const user = await updatePokeUserProfile(userData, userId);
         if (!user) {
             return res.status(404).json({ error: `Error while updating data` });
         }

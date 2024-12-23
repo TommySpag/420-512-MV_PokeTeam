@@ -204,9 +204,8 @@ const TeamsPage = () => {
 
     return (
         <View className="h-full pb-16" style={{ backgroundColor: colors.background_c1 }}>
-            <View style={{ height: 4, backgroundColor: colorsPalette.type[type]}} />
-            <ScrollView className="h-full">
-                <View className="justify-center items-center p-10">
+            <View style={{ height: 5, backgroundColor: colorsPalette.type[type]}} />
+                <View className="justify-center items-center p-5">
                     <Text style={styles.text}>
                         {'All Pokemon Teams'.split('').map((letter, index) => (
                             <View key={index}>
@@ -244,7 +243,6 @@ const TeamsPage = () => {
                         )}
                     />
                 )}
-            </ScrollView>
             <TouchableOpacity
                     style={{ backgroundColor: colors.btnBorderAndTextColor, borderColor: colors.primary}}
                     className="py-4 px-6 rounded-md border my-2 self-center w-3/4"

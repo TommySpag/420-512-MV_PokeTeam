@@ -74,10 +74,7 @@ const signin = () => {
     >
       <SafeAreaView>
         <ScrollView showsVerticalScrollIndicator={false}>
-
-          <Image className="width" style={styles.image}
-            source={require('../../assets/images/poketeamlogo.jpg')}
-          />
+          <View className="flex-1 justify-center items-center p-8"><Image  style={{ width: 300, height: 100}} source={require('../../assets/images/poketeamlogo.jpg')}/></View>
           <View className="flex-1 justify-center items-center gap-8" >
             <Text style={styles.text}>
               {text.split('').map((letter, index) => (
@@ -103,6 +100,7 @@ const signin = () => {
                   className="justify-center py-5 rounded-lg text-center"
                   style={[{backgroundColor: colors.background, width: WIDTH_BTN, textAlign: 'center', }, { ...colors.letter, fontSize: 20 }, alertIdentifier ? { paddingRight: 56, borderWidth: 2, borderColor: colors.alert } : {}]}
                   placeholder="Entrez l'identifiant"
+                  placeholderTextColor={colors.letter.color}
                   onChangeText={(item) => setForm({ ...form, usernameOrEmail: item })}
                   value={form.usernameOrEmail}
                 />
@@ -120,7 +118,7 @@ const signin = () => {
                   style={[{ width: WIDTH_BTN, color: colors.text, backgroundColor: colors.background },{ ...colors.letter, fontSize: 20 }, alertMDP ? { paddingRight: 56, borderWidth: 2, borderColor: colors.alert } : {}]}
                   onChangeText={(item) => { setForm({ ...form, password: item }) }}
                   placeholder='Entrez le mot de passe'
-                  placeholderTextColor={colors.letter}
+                  placeholderTextColor={colors.letter.color}
                   value={form.password}
                 />
                 {alertMDP ? <Icon name="exclamation-triangle" size={30} color={colors.alert} style={{ position: 'absolute', right: 15, }} /> : null}
@@ -147,15 +145,7 @@ const signin = () => {
 export default signin
 
 const styles = StyleSheet.create({
-  image: {
-    width: 300,
-    height: 150,
-    resizeMode: 'contain',
-    marginBottom: 30,
-  },
   text: {
     flexDirection: 'row', // Aligne les lettres horizontalement
   },
-
-
 });
