@@ -33,13 +33,10 @@ La base de données contient une **table unique** où chaque entrée correspond 
 ## Instructions de démarrage
 
 1. Clonez ce dépôt GitHub.
-2. Installez les dépendances dans les deux répertoires suivants :
+2. Installez les dépendances dans les répertoires **PokeTeam_FE** et **PokeTeam_BE** avec cette commande :
     ```bash
     npm install
     ```
-   - Pour **PokeTeam_FE** (front-end).
-   - Pour **PokeTeam_BE** (back-end).
-
 3. Lancez les serveurs :
     - **PokeTeam_FE** : `npx expo start`
     - **PokeTeam_BE** : `npm run dev`
