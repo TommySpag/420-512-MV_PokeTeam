@@ -313,7 +313,9 @@ const profile = () => {
       }
 
       try {
-        const uploadedImageUrl = await uploadImageToGitHub(fileUri, 'profile_pictures/myProfilePic.png');
+        const timestamp = Date.now();
+        const uniqueFilename = `profile_pictures/image_${timestamp}.png`;
+        const uploadedImageUrl = await uploadImageToGitHub(fileUri, uniqueFilename);
         setProfilePic(uploadedImageUrl);
       } catch (error) {
         console.error('Failed to upload image:', error);
