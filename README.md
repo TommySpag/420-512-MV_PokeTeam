@@ -1,5 +1,11 @@
 # PokeTeam
 
+## Fondateurs
+
+- **TommySpag** : Tommy Spagnuolo
+- **AliteralLamb** : Lam Nguyen
+- **NWilliRex** : Ha-Vu William Nguyen
+
 ## Description
 
 Cette application mobile permet de **créer et noter des équipes de Pokémon** pour différents profils. Elle utilise l'API **PokéAPI** pour obtenir les données des Pokémon.
