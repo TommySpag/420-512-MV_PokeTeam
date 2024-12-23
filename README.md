@@ -29,7 +29,7 @@ Cette application mobile permet de **créer et noter des équipes de Pokémon** 
 
 ### Base de données
 
-La base de données contient une **table unique** où chaque entrée correspond à un utilisateur et son équipe de Pokémon.
+La base de données contient une **table unique** où chaque entrée correspond à un utilisateur et son équipe de Pokémon. Il garde aussi en mémoire les liens vers les photos de profiles déployés sur Github
 
 ### Contexte
 
