@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Image, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Image, StyleSheet, ScrollView, Animated } from 'react-native';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useLoading } from '../../contexts/loadingContext';
 import { colorsPalette } from '../../assets/colorsPalette';
@@ -17,6 +17,11 @@ const TeamsPage = () => {
     const [pokemonData, setPokemonData] = useState([]);
     const glob = useGlobalSearchParams();
     const colors = colorsPalette[theme];
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    const [fade] = useState(new Animated.Value(0));
+    const [scale] = useState(new Animated.Value(0));
+
 
     // Fetch the Pokémon data for each team
     const fetchPokemonData = async (pokeIds) => {
@@ -58,7 +63,7 @@ const TeamsPage = () => {
                                 source={{ uri: pokemon.sprite }}
                                 className="w-12 h-12 object-contain"
                             />
-                            <Text className="text-base font-bold text-white">{pokemon.name}</Text>
+                            <Animated.Text style={[styles.pokemonName, { opacity: fade, transform: [{ scale: scale }] }]}>{pokemon.name}</Animated.Text>
                         </View>
                     ) : null;
                 })}
@@ -122,7 +127,7 @@ const TeamsPage = () => {
                     <TouchableOpacity
                         key={star}
                         onPress={() => handleRating(team.id, star)} // Call handleRating when a star is clicked
-                        style={{ marginHorizontal: 4 }}
+                        style={{ marginHorizontal: 4}}
                     >
                         <Ionicons
                             size={24}
@@ -168,6 +173,7 @@ const TeamsPage = () => {
             });
 
             setPokemonData(newPokemonData);
+            setIsLoaded(true);
         } catch (error) {
             console.log('Error fetching teams or Pokémon data:', error);
         } finally {
@@ -180,6 +186,21 @@ const TeamsPage = () => {
             fetchTeams();
         }, [])
     )
+
+    useEffect(() => {
+        if (isLoaded) {
+            Animated.timing(fade, {
+                toValue: 1,
+                duration: 2000,
+                useNativeDriver: true,
+            }).start();
+            Animated.timing(scale, {
+                toValue: 1,
+                duration: 2000,
+                useNativeDriver: true,
+            }).start();
+        }
+    }, [isLoaded]);
 
     return (
         <View className="h-full pb-16" style={{ backgroundColor: colors.background_c1 }}>
@@ -239,6 +260,11 @@ const styles = StyleSheet.create({
     text: {
         flexDirection: 'row',
     },
+    pokemonName: {
+        fontSize: 14,
+        fontWeight: 'bold', 
+        color: 'white', 
+    }
 });
 
 export default TeamsPage;

@@ -323,8 +323,8 @@ const profile = () => {
 
   return (
     <>
-      <ScrollView className="h-full pb-12" style={{ backgroundColor: colors.background_c1 }}>
-        <View className="mb-6" style={{ height: 4, backgroundColor: colorsPalette.type[type]}} />
+      <View style={{ height: 4, backgroundColor: colorsPalette.type[type]}} />
+      <ScrollView className="h-full pb-12 pt-6" style={{ backgroundColor: colors.background_c1 }}>
         <View className="w-full" >
           <View className="justify-center items-center py-5">
             <TouchableOpacity
@@ -345,7 +345,13 @@ const profile = () => {
             </TouchableOpacity>
             <View className="">
               {!isEditing ?
-                <Text className="text-4xl font-medium px-16" style={{ color: colors.primary }}>{username}</Text>
+                <Text className="flex-row">
+                  {username.split('').map((letter, index) => (
+                    <View key={index}>
+                      <Text style={colors.letter}>{letter}</Text>
+                    </View>
+                  ))}
+                </Text>
                 :
                 <TextInput
                   className="justify-center text-center text-4xl font-medium px-16"
@@ -361,9 +367,9 @@ const profile = () => {
           </View>
           <View className="items-center">
             <View className="items-center border rounded-md w-2/4" style={{ borderColor: isEditing ? colors.lightAlert : colors.primary }}>
-              <Text className="absolute z-10 -top-2.5 left-3 px-1" style={{ backgroundColor: colors.background_c1, color: colors.text }}>email</Text>
+              <Text className="absolute z-10 -top-2.5 left-3 px-1" style={{ backgroundColor: colors.background_c1, color: colors.text2 }}>email</Text>
               {!isEditing ?
-                <Text className="py-3 px-2" style={{ color: colors.text }}>{email}</Text>
+                <Text className="py-3 px-2 text-xl" style={{color: colors.text2}}>{email}</Text>
                 :
                 <TextInput
                   className="justify-center z-0 py-5 rounded-lg text-center w-full py-5 rounded-lg text-center focus:border-2"
@@ -379,9 +385,9 @@ const profile = () => {
 
           <View className="items-center mt-8">
             <View className="items-center border rounded-md w-2/4" style={{ borderColor: isEditing ? colors.lightAlert : colors.primary }}>
-              <Text className="absolute z-10 -top-2.5 left-3 px-1" style={{ backgroundColor: colors.background_c1, color: colors.text }}>mot de passe</Text>
+              <Text className="absolute z-10 -top-2.5 left-3 px-1" style={{ backgroundColor: colors.background_c1, color: colors.text2 }}>mot de passe</Text>
               {!isEditing ?
-                <Text className="py-3 px-2" style={{ color: colors.background }}>{motDePasse}</Text>
+                <Text className="py-3 px-2 text-xl" style={{ color: colors.text2 }}>{motDePasse}</Text>
                 :
                 <TextInput
                   className="justify-center z-0 py-5 rounded-lg text-center w-full"
@@ -407,8 +413,12 @@ const profile = () => {
 
 
           <View className="items-center mt-8">
-            <Text className="text-lg mb-4 font-semibold text-gray-700">
-              Note de l'équipe
+            <Text className="flex-row mb-2">
+              {"Note de l'équipe".split('').map((letter, index) => (
+                <View key={index}>
+                  <Text style={colors.letter}>{letter}</Text>
+                </View>
+              ))}
             </Text>
 
             <View className="flex-row">
@@ -421,10 +431,10 @@ const profile = () => {
                 />
               ))}
             </View>
+            
+            <Text className="mt-3 text-xl mb-3" style={{color: colors.text2}}> Note : {teamRating} sur 5</Text>
 
-            <Text className="mt-3 text-gray-600 mb-3"> Note : {teamRating} sur 5</Text>
-
-            <TouchableOpacity onPress={goToRatings} className="flex-row items-center justify-center w-1/3 p-2 rounded-md" style={{ backgroundColor: colors.primary }}>
+            <TouchableOpacity onPress={goToRatings} className="flex-row items-center justify-center w-1/3 p-2 rounded-md border mt-2" style={{ backgroundColor: colors.primary, borderColor: colors.btnBorderAndTextColor }}>
               <Text className="pr-1" style={{ color: colors.text2 }}>Rate other teams </Text>
             </TouchableOpacity>
             
@@ -436,16 +446,16 @@ const profile = () => {
         <View className="w-full items-center">
           <View className="flex-row justify-center items-center py-10 gap-5">
             <TouchableOpacity onPress={logOut} className="flex-row items-center justify-center w-1/3 p-2 rounded-md" style={{ backgroundColor: colors.lightAlert }}>
-              <Text className="pr-1" style={{ color: colors.lightText }}>Déconnexion </Text>
+              <Text className="pr-1" style={{ color: colors.lightText }}/>
               <Icon name="sign-out-alt" size={30} color={colors.lightText} />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => { setIsEditing((prev) => { return !prev }) }} className="flex-row items-center justify-center w-1/3 p-2 rounded-md" style={{ backgroundColor: colors.lightAlert }}>
-              <Text className="pr-1" style={{ color: colors.lightText }}>Modifier </Text>
+              <Text className="pr-1" style={{ color: colors.lightText }} />
               <Icon name="edit" size={30} color={colors.lightText} />
             </TouchableOpacity>
           </View>
           <View className="" />
-          <TouchableOpacity onPress={supprimerUser} className="flex-row items-center justify-center w-1/3 p-2 rounded-md" style={{ backgroundColor: colors.alert }}>
+          <TouchableOpacity onPress={supprimerUser} className="flex-row items-center justify-center w-1/3 p-2 rounded-md border" style={{ backgroundColor: colors.alert, borderColor: colors.btnBorderAndTextColor }}>
             <Text className="pr-1" style={{ color: colors.lightText }}>Supprimer </Text>
             <Icon name="trash-alt" size={30} color={colors.lightText} />
           </TouchableOpacity>
