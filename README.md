@@ -12,14 +12,14 @@ Cette application mobile permet de **créer et noter des équipes de Pokémon** 
 - **Caméra** : Accès à la caméra du téléphone pour la prise de photo de profile.
 
 ### Pages principales
-- **Page d'accueil** : Page d'atterrissage avec la possibilité de s'inscrire ou de se connecter.
-- **Login et Signup** : Pages de connexion et d'inscription pour l'authentification des utilisateurs.
-- **Profile** : Profil utilisateur avec options de modification.
-- **Prise de photo** : Interface pour prendre des photos avec la caméra.
-- **Ratings** : Système de notation des équipes de Pokémon.
-- **Générations** : Visualisation des Pokémon par génération.
-- **Pokémon par génération** : Exploration des Pokémon classés par génération.
-- **Description Pokémon** : Détails sur chaque Pokémon.
+- **Page d'accueil** 
+- **Login et Signup** 
+- **Profile** 
+- **Prise de photo** 
+- **Ratings**
+- **Générations**
+- **Pokémon par génération**
+- **Description d'un Pokémon**
 
 ### Base de données
 
