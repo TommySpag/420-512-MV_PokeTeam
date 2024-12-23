@@ -5,12 +5,15 @@ import { useLoading } from '../../contexts/loadingContext';
 import { colorsPalette } from '../../assets/colorsPalette';
 import { getPokemonInfoByName, getAllPokeTeamsAndRatings, updateTeamRating } from '../../lib/axios'; 
 import { Ionicons } from '@expo/vector-icons';
-import { useGlobalSearchParams, useFocusEffect } from "expo-router";
+import { useColorTypeTheme } from '../../contexts/colorTypeContext';
+import { useGlobalSearchParams, useFocusEffect, useRouter } from "expo-router";
 
 const TeamsPage = () => {
     const { theme } = useTheme();
+    const { type } = useColorTypeTheme();
     const { setLoading } = useLoading();
     const [teams, setTeams] = useState([]);
+    const route = useRouter();
     const [pokemonData, setPokemonData] = useState([]);
     const glob = useGlobalSearchParams();
     const colors = colorsPalette[theme];
@@ -24,6 +27,10 @@ const TeamsPage = () => {
 
         const results = await Promise.all(pokemonPromises);
         return results;
+    };
+
+    const goToProfile = () => {
+        route.push(`/${glob.user}/profile`);
     };
 
     const renderPokemon = (team) => {
@@ -135,61 +142,71 @@ const TeamsPage = () => {
       )
 
     return (
-        <ScrollView className="h-full pb-16" style={{ backgroundColor: colors.background_c1 }}>
-            <View className="justify-center items-center p-10">
-                <Text style={styles.text}>
-                    {'All Pokemon Teams'.split('').map((letter, index) => (
-                        <View key={index}>
-                            <Text style={colors.letter}>{letter}</Text>
-                        </View>
-                    ))}
-                </Text>
-            </View>
-            {teams.length === 0 ? (
-                <View className="flex-1 justify-center items-center">
-                    <Text style={{ color: colors.text, marginTop: 16 }}>No teams currently available</Text>
+        <View className="h-full pb-16" style={{ backgroundColor: colors.background_c1 }}>
+            <View style={{ height: 4, backgroundColor: colorsPalette.type[type]}} />
+            <ScrollView className="h-full">
+                <View className="justify-center items-center p-10">
+                    <Text style={styles.text}>
+                        {'All Pokemon Teams'.split('').map((letter, index) => (
+                            <View key={index}>
+                                <Text style={colors.letter}>{letter}</Text>
+                            </View>
+                        ))}
+                    </Text>
                 </View>
-            ) : (
-                <FlatList
-                    data={teams}
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => (
-                        <View
-                            style={{
-                                padding: 16,
-                                marginBottom: 16,
-                                backgroundColor: colors.background,
-                                borderRadius: 8,
-                                shadowColor: colors.shadow,
-                            }}
-                        >
-                            <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'white' }}>
-                                Team: {item.id}
-                            </Text>
-                            <View style={{ marginTop: 8 }}>
-                                {renderPokemon(item)}
-                            </View>
+                {teams.length === 0 ? (
+                    <View className="flex-1 justify-center items-center">
+                        <Text style={{ color: colors.text, marginTop: 16 }}>No teams currently available</Text>
+                    </View>
+                ) : (
+                    <FlatList
+                        data={teams}
+                        keyExtractor={(item) => item.id.toString()}
+                        renderItem={({ item }) => (
+                            <View
+                                style={{
+                                    padding: 16,
+                                    marginBottom: 16,
+                                    backgroundColor: colors.background,
+                                    borderRadius: 8,
+                                    shadowColor: colors.shadow,
+                                }}
+                            >
+                                <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'white' }}>
+                                    Team: {item.id}
+                                </Text>
+                                <View style={{ marginTop: 8 }}>
+                                    {renderPokemon(item)}
+                                </View>
 
-                            <View style={{ flexDirection: 'row', marginTop: 16, justifyContent: 'center', alignItems: 'center' }}>
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                    <TouchableOpacity
-                                        key={star}
-                                        onPress={() => handleRatingChange(item.id, star)}
-                                        className="m-3"
-                                    >
-                                        <Ionicons
-                                            size={24}
-                                            name={star <= item.sumOfRatings / item.nbT_Rated ? 'star' : 'star-outline'}
-                                            color={star <= item.sumOfRatings / item.nbT_Rated ? '#FACC15' : '#D1D5DB'}
-                                        />
-                                    </TouchableOpacity>
-                                ))}
+                                <View style={{ flexDirection: 'row', marginTop: 16, justifyContent: 'center', alignItems: 'center' }}>
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                        <TouchableOpacity
+                                            key={star}
+                                            onPress={() => handleRatingChange(item.id, star)}
+                                            className="m-3"
+                                        >
+                                            <Ionicons
+                                                size={24}
+                                                name={star <= item.sumOfRatings / item.nbT_Rated ? 'star' : 'star-outline'}
+                                                color={star <= item.sumOfRatings / item.nbT_Rated ? '#FACC15' : '#D1D5DB'}
+                                            />
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
                             </View>
-                        </View>
-                    )}
-                />
-            )}
-        </ScrollView>
+                        )}
+                    />
+                )}
+            </ScrollView>
+            <TouchableOpacity
+                    style={{ backgroundColor: colors.btnBorderAndTextColor, borderColor: colors.primary}}
+                    className="py-4 px-6 rounded-md border my-2 self-center w-3/4"
+                    onPress={goToProfile}
+                >
+                    <Text className="text-center text-2xl font-bold font-sans" style={{ color: colors.primary }}>Go back</Text>
+            </TouchableOpacity>
+        </View>
     );
 };
 

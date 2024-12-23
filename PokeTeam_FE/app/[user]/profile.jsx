@@ -3,17 +3,19 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useTheme } from '../../contexts/ThemeContext'
 import { colorsPalette } from '../../assets/colorsPalette'
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { fetchProfileData, setToken, updateProfileData, deleteUserById, getPokemonInfoByName, updateTeamData, uploadImageToGitHub, deletePokemon } from '../../lib/axios'
+import { fetchProfileData, setToken, updateProfileData, deleteUserById, getPokemonInfoByName, updateTeamData, uploadImageToGitHub, deletePokemon, getPokemonInfoById } from '../../lib/axios'
 import { useFocusEffect, useGlobalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useLoading } from '../../contexts/loadingContext';
 import { useGenerationsTheme } from '../../contexts/generationContext';
 import { usePokemonTheme } from '../../contexts/pokemonContext';
+import { useColorTypeTheme } from '../../contexts/colorTypeContext';
 import * as ImagePicker from 'expo-image-picker';
 
 
 const profile = () => {
   const { theme } = useTheme()
+  const { type, setType } = useColorTypeTheme();
   const colors = colorsPalette[theme]
   const glob = useGlobalSearchParams();
   const route = useRouter()
@@ -31,6 +33,7 @@ const profile = () => {
   const [pokemonData, setPokemonData] = useState([]);
   const [selectedPokemonIndex, setSelectedPokemonIndex] = useState(null);
   const [profileData, setProfileData] = useState([])
+
   //use pokedate pour display les pokemon (map) pokedata[0] = premier (pokemon pokemonData[0].pokename.sprite)
 
   //States
@@ -69,6 +72,7 @@ const profile = () => {
       setTeamRating(rating);
 
       setProfileData(fetchedData);
+
     } catch (error) {
       console.log('Profile: Failed loading profile data:', error);
       route.push("/auth/signin")
@@ -78,9 +82,23 @@ const profile = () => {
     }
   };
 
+  const getPokeLeaderType = async (pokeId) => {
+    try{
+      const leaderData = await getPokemonInfoById(pokeId)
+      if (!leaderData || leaderData == "") {
+        setType('original')
+      }
+      setType(leaderData.types[0].type.name)
+    } catch (error) {
+      console.log("Error getting pokeLeader type");
+      setType('original');
+    }
+  }
+
   useFocusEffect(
     React.useCallback(() => {
       loadProfileData();
+      getPokeLeaderType(pokeTeam[0]);
       setIsMounted(true);
       return () => {
         setIsMounted(false);
@@ -300,7 +318,8 @@ const profile = () => {
 
   return (
     <>
-      <ScrollView className="h-full pb-12 pt-6" style={{ backgroundColor: colors.background_c1 }}>
+      <ScrollView className="h-full pb-12" style={{ backgroundColor: colors.background_c1 }}>
+        <View className="mb-6" style={{ height: 4, backgroundColor: colorsPalette.type[type]}} />
         <View className="w-full" >
           <View className="justify-center items-center py-5">
             <TouchableOpacity

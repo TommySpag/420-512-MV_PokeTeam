@@ -8,11 +8,13 @@ import { colorsPalette } from '../../assets/colorsPalette';
 import { getNbGenerations, getStartersForGeneration, getPokemonInfoByName} from '../../lib/axios';
 import { useGenerationsTheme } from '../../contexts/generationContext';
 import { useGlobalSearchParams, useRouter } from 'expo-router';
+import { useColorTypeTheme } from '../../contexts/colorTypeContext';
 
 const WIDTH = Dimensions.get('window').width;
 
 const generations = () => {
   const { theme } = useTheme();
+  const { type } = useColorTypeTheme();
   const colors = colorsPalette[theme];
   const glob = useGlobalSearchParams();
   const {setGeneration} = useGenerationsTheme();
@@ -101,6 +103,7 @@ const generations = () => {
 
   return (
     <View className="h-full pb-16" style={{ backgroundColor: colors.background_c1 }}>
+      <View style={{ height: 4, backgroundColor: colorsPalette.type[type]}} />
       <View className="justify-center items-center gap-8 p-10">
         <Text style={styles.text}>
           {'Générations'.split('').map((letter, index) => (

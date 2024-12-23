@@ -240,6 +240,37 @@ export async function getPokemonInfoByName(pokeName) {
     }
 }
 
+export async function getPokemonInfoById(pokeId) {
+    if (pokeId <= 0) {
+        console.log("Invalid Pokémon id provided.");
+        return "";
+    }
+
+    try {
+        console.log("Trying to getPokemonInfoByNId with id: " + pokeId);
+
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokeId}`);
+
+        if (!response.ok) {
+            throw new Error(`Error fetching data for ${pokeId}: ${response.status}`);
+        }
+
+        const pokemon = await response.json();
+
+        return {
+            id: pokemon.id,
+            name: pokemon.name,
+            types: pokemon.types,
+            abilities: pokemon.abilities,
+            weight: pokemon.weight,
+            sprite: pokemon.sprites.front_default, 
+        };
+    } catch (error) {
+        console.log(`Error in getPokemonInfoById: ${error.message}`);
+        return ""; 
+    }
+}
+
 export async function getPokemonSpriteByName(pokeName) {
     try {
         console.log("Trying to getPokemonSpriteByName with name: " + pokeName);

@@ -5,6 +5,7 @@ import { getPokemonInfoByName, getPokemonDescriptionByName, updateProfileAddPoke
 import { useGlobalSearchParams, useRouter } from 'expo-router';
 import { useTheme } from '../../contexts/ThemeContext';
 import { usePokemonTheme } from '../../contexts/pokemonContext';
+import { useColorTypeTheme } from '../../contexts/colorTypeContext';
 import { colorsPalette } from '../../assets/colorsPalette';
 
 
@@ -54,6 +55,7 @@ const WIDTH = Dimensions.get('window').width;
 const PokemonDetails = () => {
 
     const { theme } = useTheme();
+    const { type } = useColorTypeTheme();
     const colors = colorsPalette[theme];
     const glob = useGlobalSearchParams();
     const [pokemon, setPokemon] = useState(null);
@@ -127,7 +129,9 @@ const PokemonDetails = () => {
     }
 
     return (
-        <ScrollView className="bg-gray-100 p-4" contentContainerStyle={{ alignItems: 'center', paddingBottom: 20 }} style={[{ backgroundColor: colors.background_c1 }]}>
+        <>
+            <View style={{ height: 4, backgroundColor: colorsPalette.type[type]}} />
+            <ScrollView className="bg-gray-100 p-4" contentContainerStyle={{ alignItems: 'center', paddingBottom: 20 }} style={[{ backgroundColor: colors.background_c1 }]}>
                 <View className="rounded-lg shadow-lg mb-2 w-3/4 border" style={{ backgroundColor: colors.navBarBackground, borderColor: colors.btnBorderAndTextColor }} >
                     <View className="flex-1 justify-center items-center"><Animated.Image style={{ width: 250, height: 300, opacity: fadeAnimation }} source={{ uri: pokemon.sprite }} /></View>
                     <Text style={{ color: colors.descriptionText }} className="text-3xl font-bold font-sans text-center mb-2">{pokemon.name}</Text>
@@ -181,7 +185,8 @@ const PokemonDetails = () => {
                         <Text style={{ color: colors.descriptionText }} className="text-lg font-bold">Go back</Text>
                     </TouchableOpacity>
                 </View>
-        </ScrollView>
+            </ScrollView>
+        </>
     );
 };
 
