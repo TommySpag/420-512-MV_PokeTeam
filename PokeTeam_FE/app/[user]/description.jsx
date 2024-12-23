@@ -116,8 +116,11 @@ const PokemonDetails = () => {
     }, [description]);
 
     const handleAdd = async () => {
+        
         try {
-            const addPoke = await updateProfileAddPoke(glob.user);
+            const addPoke = await updateProfileAddPoke(glob.user, pokemon.id);
+            route.push(`/${glob.user}/profile`)
+            
             console.log("Pokemon added successfully:", addPoke);
         } catch (error) {
             console.error("Error occurred while adding Pokémon:", error);
@@ -127,6 +130,7 @@ const PokemonDetails = () => {
     if (!pokemon) {
         return <View><Text>Chargement des détails...</Text></View>;
     }
+
 
     return (
         <>

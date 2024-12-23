@@ -136,11 +136,10 @@ export async function deleteUserById(id){
 export async function updateProfileAddPoke(userId, pokeId) {
     try {
       console.log(`Trying to updateProfileAddPoke with userId: ${userId} and pokeId: ${pokeId}`);
-      const updateData = await axios.put(`/pokeusers/addpoke/${userId}/${pokeId}`);
-  
+      const updateData = await api.put(`/pokeusers/addpoke/${userId}/${pokeId}`);
       if (updateData.status !== 200) throw new Error('Failed to add Pokémon.');
   
-      return updateData.data;
+      return updateData.data; 
     } catch (error) {
       console.error('Error occurred while adding Pokémon:', error);
       throw new Error(error);
@@ -247,7 +246,7 @@ export async function getPokemonInfoById(pokeId) {
     }
 
     try {
-        console.log("Trying to getPokemonInfoByNId with id: " + pokeId);
+        console.log("Trying to getPokemonInfoById with id: " + pokeId);
 
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokeId}`);
 
@@ -387,10 +386,10 @@ export async function getAllPokeTeamsAndRatings(userId) {
 }
 
 
-export async function updateTeamRating(userData){
+export async function updateTeamRating(teamId ,userData){
     try {
         console.log(`Trying to updateTeamData with userData: ${userData}`);
-        const updateData = await api.put(`/pokeusers/modifyrating/:${userData.id}`,userData,{
+        const updateData = await api.put(`/pokeusers/modifyrating/${teamId}`,userData,{
             header:{
                 Authorization: 'none',
             },

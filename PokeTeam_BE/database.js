@@ -99,7 +99,7 @@ export async function updatePokeUserTeam(userId,userData){
 }
 
 export async function addPokemonToPokeUserTeam(pokeID, userID, placement){
-    console.log(`Database : update PokeUsers with userData.id : ${userId}`)
+    console.log(`Database : update PokeUsers with userData.id : ${userID}`)
 
     const [rows] = await pool.query(`UPDATE pokeUsers SET pokemon?_id = ? WHERE id = ?;`,[placement,pokeID,userID])
         return true
@@ -111,7 +111,7 @@ export async function getAllPokeTeamsAndRatings(){
     return rows
 }
 
-export async function updateTeamRating(userId,userData){
+export async function updateTeamRating(userId, userData){
     //DEBUG
     console.log(`Database : update Rating with userData.id : ${userId}`)
     //

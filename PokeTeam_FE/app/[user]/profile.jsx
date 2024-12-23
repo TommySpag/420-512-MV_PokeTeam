@@ -84,7 +84,7 @@ const profile = () => {
 
   const getPokeLeaderType = async (pokeId) => {
     try{
-      const leaderData = await getPokemonInfoById(pokeId)
+      const leaderData = await getPokemonInfoById(pokeId);
       if (!leaderData || leaderData == "") {
         setType('original')
       }
@@ -98,13 +98,18 @@ const profile = () => {
   useFocusEffect(
     React.useCallback(() => {
       loadProfileData();
-      getPokeLeaderType(pokeTeam[0]);
       setIsMounted(true);
       return () => {
         setIsMounted(false);
       };
     }, [])
   )
+
+  useEffect(() => {
+    if (pokeTeam && pokeTeam[0]) {
+      getPokeLeaderType(pokeTeam[0]);
+    }
+  }, [pokeTeam]);
 
 
   //Function to retrieve the data of a pokemon from pokeApi
@@ -394,9 +399,9 @@ const profile = () => {
             <FlatList
               scrollEnabled={false}
               numColumns={3}
-              data={pokemonData}
+              data={pokemonData.slice(0,6)}
               renderItem={Item}
-              keyExtractor={item => item.id}
+              keyExtractor={(item, index) => index.toString()}
             />
           </View>
 

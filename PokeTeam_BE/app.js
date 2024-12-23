@@ -1,5 +1,5 @@
 import express from 'express';
-import { getPokeUserByUsernameOrEmailAndPassword, createPokeUser, getPokeUserByUsernameOrEmail, getPokeUserById, updatePokeUserProfile, deletePokeUserById, updatePokeUserTeam, getAllPokeTeamsAndRatings } from './database.js'
+import { getPokeUserByUsernameOrEmailAndPassword, createPokeUser, getPokeUserByUsernameOrEmail, getPokeUserById, updatePokeUserProfile, deletePokeUserById, updatePokeUserTeam,getAllPokeTeamsAndRatings, updateTeamRating ,addPokemonToPokeUserTeam } from './database.js'
 import jwt from 'jsonwebtoken';
 import cors from 'cors'
 
@@ -232,13 +232,13 @@ app.put("/pokeusers/addpoke/:userid/:pokeid", async (req, res) => {
             return res.status(404).json({ error: `Error while updating data` });
         }
 
-        const nbPokemon = 0;
+        let nbPokemon = 0;  // Change 'const' to 'let'
         for (let index = 6; index > 0; index--) {
             if (user?.[`pokemon${index}_id`] !== null) {
                 nbPokemon++;
             }
         }
-
+        
         if (nbPokemon == 6) {
             return res.status(400).json({ error: `Error: Team Full` });
         }
@@ -399,6 +399,7 @@ app.get("/pokeusers/TeamAndRatings/:id", async (req, res) => {
             return res.status(409).json({ error: "Forbidden: you are not allowed to get this info" });
         }
         const teamData = await getAllPokeTeamsAndRatings();
+        console.log(teamData)
 
         if (!teamData || teamData.length === 0) {
             return res.status(404).json({ error: 'No teams or ratings found' });
