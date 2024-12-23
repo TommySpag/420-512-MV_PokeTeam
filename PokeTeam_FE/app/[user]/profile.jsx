@@ -11,6 +11,7 @@ import { useGenerationsTheme } from '../../contexts/generationContext';
 import { usePokemonTheme } from '../../contexts/pokemonContext';
 import { useColorTypeTheme } from '../../contexts/colorTypeContext';
 import * as ImagePicker from 'expo-image-picker';
+import * as Permissions from 'expo-permissions';
 
 
 const profile = () => {
@@ -294,12 +295,21 @@ const profile = () => {
     }
   };
 
+  const requestCameraPermission = async () => {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    if (status !== 'granted') {
+      alert('Camera permission is required to take a profile picture.');
+      return false;
+    }
+    return true;
+  };
+
   const handleProfilePicPress = async () => {
     const hasPermission = await requestCameraPermission();
     if (!hasPermission) return;
 
     const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.Images,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
